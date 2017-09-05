@@ -7,10 +7,19 @@ function [ b_dot_nodes, ...
                                    
 global N_t_nodes N_x_nodes
   
-
 global DIRECTORY_data
 
 addpath(DIRECTORY_data)
+
+
+bdot1 = 1;
+bdot2 = 0;
+bdot3 = 0;
+bdot4 = 0;
+
+disp (' ')
+disp ('Check bdot prescribed in load_b_dot.m')
+disp(' ')
 
 
 % Interpolate onto nodes and mesh:
@@ -28,6 +37,8 @@ load DH_accum_width_velocity.mat
 load DH_surf_bed.mat
 
  
+
+if (bdot1 == 1)
 % % ------------------------------
 % % OPTION 1: lapse rate estimate modern
 % % ------------------------------
@@ -52,25 +63,28 @@ b_dot_use    = interp1(Darwin_centerline_distance, Darwin_bdot_modern_lapse, x_n
 % % b_dot_use = linspace(0,0, length(x_nodes));
 
 
-% % ------------------------------
-% % OPTION 2: Arthern estimate LGM
-% % ------------------------------
-%  b_dot_use = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_A*0.6, x_nodes);  % NOT NEGATIVE here...
+elseif (bdot2 == 1)
+% ------------------------------
+% OPTION 2: Arthern estimate LGM
+% ------------------------------
+ b_dot_use = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_A*0.6, x_nodes);  % NOT NEGATIVE here...
 
 
-% % ------------------------------
-% % OPTION 3: RACMO estimate LGM
-% % ------------------------------
-%  b_dot_use = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_R*0.6, x_nodes);  % NOT NEGATIVE here...
+ elseif (bdot3 == 1)
+% ------------------------------
+% OPTION 3: RACMO estimate LGM
+% ------------------------------
+ b_dot_use = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_R*0.6, x_nodes);  % NOT NEGATIVE here...
 
-% 
-% % ------------------------------
-% % OPTION 4: LGM estimate
-% % ------------------------------
-%   b_dot_use = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_LGM, x_nodes);
+
+ elseif (bdot4 == 1)
+% ------------------------------
+% OPTION 4: LGM estimate
+% ------------------------------
+  b_dot_use = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_LGM, x_nodes);
 
   
-  
+end 
   
   for ii = 1:N_t_nodes
     b_dot_nodes(ii,:) = b_dot_use;

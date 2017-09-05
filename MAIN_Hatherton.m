@@ -5,7 +5,12 @@ global S_in_global_Hatherton
 
 
  S_in_global_Hatherton   = 793; 
-                  
+% S_in_global_Hatherton   = 1117; % min1
+% S_in_global_Hatherton   = 1185;  % min2
+
+ disp(' ')
+ disp('Check S_in_global in MAIN_hatherton.m')
+ disp('')
                                 
 % ------------
 % SETUP DOMAIN

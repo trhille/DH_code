@@ -79,7 +79,7 @@ global LGM_transient
 % STEP 1: Run minimization scheme to find best E and fs that give match to
 % surface elevation and surface velocity at Darwin and at Hatherton
 
-steady_state_only = 1;  % =1 to run.
+steady_state_only = 0;  % =1 to run.
 
 % Need to set one of the min_search algorithms = 1 at a time.
 % THEN, need to set corresponding flags for deformation and/or sliding.
@@ -116,8 +116,8 @@ deformation_sliding_longstress             = 0; % not included yet!
 deformation_sliding_lateraldrag_longstress = 0; % not included yet!
 
 % For Hatherton (always as XX2)
-deformation_only2                           = 1;
-sliding_only2                               = 0; 
+deformation_only2                           = 0;
+sliding_only2                               = 1; 
 deformation_plus_sliding2                   = 0; 
 deformation_sliding_lateraldrag2            = 0; % not included yet!
 deformation_sliding_longstress2             = 0; % not included yet!
@@ -186,7 +186,7 @@ deformation_sliding_lateraldrag_longstress2 = 0; % not included yet!
 % Set run_min... = 0 and keep steady_state = 1; set LGM_steady_state=1                        
   
 
-LGM_steady_state = 1;   % Run for steady state to best match LGM limits on Hatherton
+LGM_steady_state = 0;   % Run for steady state to best match LGM limits on Hatherton
                         % Set only this steady state flag if want to do this.
                         % Probably want lower_resolution = 0 for this one.
      
@@ -210,7 +210,7 @@ LGM_steady_state = 1;   % Run for steady state to best match LGM limits on Hathe
 % MAIN_Darwin at the bottom as "S_at_GL" -- pick between different smooth
 % and step histories to compare to data
                         
-LGM_transient    = 0;   % Sets prescribed S_at_GL for Darwin
+LGM_transient    = 1;   % Sets prescribed S_at_GL for Darwin
 
 
 

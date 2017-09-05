@@ -7,6 +7,14 @@ global LGM_transient
 
  S_in_global_Darwin   = 367;   % surf elev at the mouth of the glacier near grounding line
                   
+ %S_in_global_Darwin   = 912;   % min1
+ %S_in_global_Darwin   = 892;   % min2
+ 
+ 
+ disp(' ')
+ disp('Check S_in_global in MAIN_Darwin.m')
+ disp('')
+ 
  
 % ------------
 % SETUP DOMAIN
@@ -168,7 +176,8 @@ end   % if statement on temperature options
   if (LGM_transient == 1)
       
     load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
-  %  S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0], [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern' Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
+    
+ %   S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0], [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern' Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
   
   %  S_at_GL = S_0_in + interp1([t_P(1) -Stepwise9ka.Time' 0], [Stepwise9ka.HeightAboveModern(1) Stepwise9ka.HeightAboveModern' Stepwise9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
   
