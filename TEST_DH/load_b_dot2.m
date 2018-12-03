@@ -17,6 +17,7 @@ bdot1 = 1;
 bdot2 = 0;
 bdot3 = 0;
 bdot4 = 0;
+bdot5 = 0;
 
 
 disp (' ')
@@ -35,10 +36,10 @@ disp(' ')
 
 % From QGIS -- Accumulation_A vs. Accumulation_R
 load DH_accum_width_velocity.mat
-
+load Hat_RACMO2_1.mat
 load DH_surf_bed.mat
 
-
+if bdot1 + bdot2 + bdot3 + bdot4 + bdot5 == 1
 
 if (bdot1 == 1)
 % % ------------------------------
@@ -77,16 +78,47 @@ elseif (bdot4 == 1)
 % ------------------------------
   b_dot_use = interp1(Hat_accumulation_centerline_distance, Hat_accumulation_LGM, x_nodes);
 
-  
+elseif (bdot5 == 1)
+% ------------------------------
+% OPTION 4: RACMO2.1 5.5 km product
+% ------------------------------
+  b_dot_use = interp1(1e4:1e3:85e3, Hat_SMB, x_nodes);
+
+for ii = 1:N_t_nodes2
+b_dot_nodes(ii,:) = b_dot_use;
+end
+
+end
+
+elseif bdot1 + bdot2 + bdot3 + bdot4 + bdot5 > 1
+
+if bdot1 == 1 && bdot2 == 1
+    weight = linspace(1,0, N_t_nodes2);
+    
+precip_at_sl = -0.35;
+lapse = 0.35/1500;
+Hat_bdot_modern_lapse = precip_at_sl + lapse.*Hat_modern_surface;
+b_dot_modern = interp1(Hat_centerline_distance, Hat_bdot_modern_lapse, x_nodes);
+b_dot_LGM = interp1(Hat_accumulation_centerline_distance, Hat_accumulation_A*0.6, x_nodes);
+
+    for ii = 1:N_t_nodes2
+        b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
+    end
+
+end
+
 end
 
 
 
-  for ii = 1:N_t_nodes2
-    b_dot_nodes(ii,:) = b_dot_use;
-  end
-
-  
+%% 11/25/18 Experimenting with changing accumulation linearly with time
+% b_dot_LGM = interp1(Hat_accumulation_centerline_distance, Hat_accumulation_R*0.6, x_nodes);
+% b_dot_modern = interp1(Hat_accumulation_centerline_distance, Hat_accumulation_R, x_nodes);
+% 
+%  weight = linspace(1,0, N_t_nodes2);
+% for ii = 1:N_t_nodes2
+%     b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
+% end
 
 % % Constant in time
 % % ------------------

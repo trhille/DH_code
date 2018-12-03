@@ -40,9 +40,10 @@ global s_per_year
 % % Values from min search
 % % ======================
 % disp('Using best min search factor for E!')
-% load best_min_search_E.mat
+% load min7.mat E_P  
+% disp('loading E_P from min7.mat')
 % fd_P = interp1(x_P_best, factor_P_best, x_P, 'linear', 'extrap');
-   
+ 
   [E_w, E_e ] = get_edge_values_quadratic ( E_P, x_P, x_w, x_e, dx_P, dx_w, dx_e );
   
    

@@ -108,17 +108,17 @@ lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
 % - - - - - - - - - - - - - - - - - - - - - - -                                                 
 % Only one of these should be set = 1 at a time. 
 % For Darwin:
-deformation_only                           = 1;
+deformation_only                           = 0;
 sliding_only                               = 0; 
-deformation_plus_sliding                   = 0; 
+deformation_plus_sliding                   = 1; 
 deformation_sliding_lateraldrag            = 0; % not included yet!
 deformation_sliding_longstress             = 0; % not included yet!
 deformation_sliding_lateraldrag_longstress = 0; % not included yet!
 
 % For Hatherton (always as XX2)
 deformation_only2                           = 0;
-sliding_only2                               = 1; 
-deformation_plus_sliding2                   = 0; 
+sliding_only2                               = 0; 
+deformation_plus_sliding2                   = 1; 
 deformation_sliding_lateraldrag2            = 0; % not included yet!
 deformation_sliding_longstress2             = 0; % not included yet!
 deformation_sliding_lateraldrag_longstress2 = 0; % not included yet!
@@ -415,8 +415,20 @@ elseif (steady_state_only == 0)  % Transient runs.
        disp(' ')
        disp(['Time in calculation = ',int2str(t_P(time))]);
        disp(' ')
+
        
-       
+% update surface mass balance if using lapse rate
+% precip_at_sl = -0.35;
+% lapse        = 0.35/1500;
+% if time>1
+% b_dot_P(time,:) = precip_at_sl + lapse * S_P(time-1,:);
+% 
+% b_dot_edges(time, :) = interp1(x_P, b_dot_P(time,:), x_edges,'linear', 'extrap');
+% 
+% b_dot_P2(time,:) = precip_at_sl + lapse * S_P2(time-1,:);
+% 
+% b_dot_edges2(time, :) = interp1(x_P2, b_dot_P2(time,:), x_edges2,'linear', 'extrap');
+% end
 % -------------------------------------------------------------------------    
     calculate_surface_Darwin;
 % -------------------------------------------------------------------------
@@ -429,8 +441,9 @@ disp('  Resetting surface elevation for Hatherton based on Darwin values ... ')
 S_in_global_Hatherton = h_w(time2, index_xpos_Hatherton_edges) + B_w(index_xpos_Hatherton_edges);
 S_0_in2               = S_in_global_Hatherton;
 S_at_GL2(time2)       = S_0_in2;
-      
-     
+
+
+
 % -------------------------------------------------------------------------
     calculate_surface_Hatherton;
       disp('Calculating for Hatherton')

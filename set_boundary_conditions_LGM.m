@@ -5,7 +5,7 @@
 % %OLD sets:
 % load min1.mat
 % load min2.mat
-% load min3.mat
+% load SAVE_runs_with_warmerice/pollard_min3.mat
 % load min4.mat
 % load min5.mat
 % load min6.mat
@@ -58,7 +58,7 @@
 
 % %load minE_values.mat
 % load minfs_values.mat
-% %load minE_and_fs_values.mat
+load SAVE_runs_with_warmerice/minE_and_fs_values.mat
 % 
 % % Interpolate to compare running on finer xgrid, whereas min search was
 % % done using "lower_resolution = 1"; interpolation can give negative (and

@@ -21,6 +21,7 @@ flowy = interp1(flowline_struct.X, flowline_struct.Y, flowx);
 flowline = [flowx; flowy]';
 
 
+
 %% Normal lies in the null space of the matrix A - B, where A and B are each
 %(x,y) pairs
 %calculate normals to left and right of start and end of flowline (looking
@@ -82,6 +83,7 @@ distance_vec  = [distance_vec; distance_temp];
 end
 
 distance_along_centerline = cumsum(distance_vec);
+keyboard
 end
 
 

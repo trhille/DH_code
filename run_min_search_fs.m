@@ -11,7 +11,7 @@ N_fs       = length( fs_vec );
 % setup and don't have it double checked. 
 
 % for iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
- for iterations = 2    
+ for iterations = 1    
     
     if (iterations == 1)
         disp('Running for Darwin...')

@@ -103,6 +103,6 @@ ylim([-500 2300])
 end
 
 
-export_fig figure2_LGM_SS.pdf -pdf -transparent
+% export_fig figure2_LGM_SS.pdf -pdf -transparent
 
 

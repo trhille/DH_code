@@ -26,8 +26,8 @@ function  [ Q_0_in, ...
 
 % ZERO External flux:
 % -------------------
-  Q_ext_L_nodes = 0 * ones(size(t_nodes));
-  Q_ext_R_nodes = 0 * ones(size(t_nodes));
+  Q_ext_L_nodes = 0 * ones(size(t_nodes)); %-Q_0_in * ones(size(t_nodes));
+  Q_ext_R_nodes = 0 * ones(size(t_nodes)); %-Q_0_in * ones(size(t_nodes));
 
   
 % % Linearly decreasing flux:

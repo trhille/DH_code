@@ -94,6 +94,9 @@ global LGM_transient
 
 if (add_tributary_flux == 0)
    flux_add_P = zeros(size(x_P));
+   
+elseif (add_tributary_flux == 1)
+   flux_add_P = interp1(tributary_x, tributary_flux, X_P);
 end
 
 [ flux_add_w, ...
@@ -175,13 +178,17 @@ end   % if statement on temperature options
   
   if (LGM_transient == 1)
       
-    load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
+%     load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
+    load DH_DATA/Boundary_conditions/Diamond_Hill/SPRATT_ens.mat
     
  %   S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0], [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern' Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
   
-  %  S_at_GL = S_0_in + interp1([t_P(1) -Stepwise9ka.Time' 0], [Stepwise9ka.HeightAboveModern(1) Stepwise9ka.HeightAboveModern' Stepwise9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
+ %  S_at_GL = S_0_in + interp1([t_P(1) -Stepwise9ka.Time' 0], [Stepwise9ka.HeightAboveModern(1) Stepwise9ka.HeightAboveModern' Stepwise9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
   
-    S_at_GL = S_0_in + interp1([PollardModel.Time'], [PollardModel.HeightAboveModern'], t_P,'linear', 'extrap');
+ %   S_at_GL = S_0_in + interp1([PollardModel.Time'], [PollardModel.HeightAboveModern'], t_P,'linear', 'extrap');
+ 
+S_at_GL = S_0_in + interp1([SPRATT_tau2000_ocfac1_shelf5.Time'], [SPRATT_tau2000_ocfac1_shelf5.HeightAboveModern'], t_P,'linear', 'extrap');
+  
   
     disp (' ')
     disp(' check S_at_GL in MAIN_Darwin! ')

@@ -10,7 +10,7 @@ N_E           = length( E_vec );
 
 
 % for iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
- for iterations = 2    
+ for iterations = 1:2   
     
     if (iterations == 1)
         disp('Running for Darwin...')
