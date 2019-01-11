@@ -14,7 +14,7 @@ function [ x_nodes, t_nodes ] = load_nodes
 
 global min_search_E min_search_fs min_search_bed min_search_E_and_fs
 global lower_resolution
-
+global LGM_b_dot
 
 %   x- positions of nodes (meters)
 %   ------------------------------
@@ -24,7 +24,7 @@ global lower_resolution
       x_nodes = (10000:1000:151000);
  
       
-if ( (lower_resolution == 1) || (min_search_E == 1) || (min_search_bed == 1) || (min_search_fs == 1) || (min_search_E_and_fs) )
+if ( (lower_resolution == 1) || (min_search_E == 1) || (min_search_bed == 1) || (min_search_fs == 1) || (min_search_E_and_fs == 1) )
       
   %   x_nodes = linspace(10e3,1.51e5, 67);
       x_nodes = (10000:2000:151000);
@@ -36,8 +36,14 @@ end
 %   t_nodes must include the present day (t=0), as the last value!
 %   t_nodes needs to be a column vector.
 %   ------------------------------------
+
+
+
     t_nodes = [-20000:100:0]'; 
-  
+if exist('LGM_b_dot') & LGM_b_dot == 1
+    t_nodes = [-1e5:100:0]';
+end
+
 
     
 %   % For min search:  

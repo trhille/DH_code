@@ -16,8 +16,8 @@ function  [ Q_0_in, ...
 % ======================
 
 
-  Q_0_in = (-10*800*(4/5));  % *25000);
-%   Q_0_in = 0;
+   Q_0_in = 1.5*(-10*800*(4/5));  % *25000);
+%  Q_0_in = 0;
 
  
 % Prescribe the value of external flux at left (L)
@@ -33,7 +33,7 @@ function  [ Q_0_in, ...
 % % Linearly decreasing flux:
 % % -------------------------
 %   Q_ext_L_nodes = 0 * ones(size(t_nodes));
-%   Q_ext_R_nodes = interp1([t_nodes(1) t_nodes(end)], [0 100000], t_nodes);
+%  Q_ext_R_nodes = interp1([t_nodes(1) t_nodes(end)], [75e4 0], t_nodes);
       
   
 

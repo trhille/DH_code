@@ -6,9 +6,9 @@ function [ b_dot_nodes, ...
 % -------------------------------------------------------------------------                                   
                                    
 global N_t_nodes2 N_x_nodes2
-  
-
 global DIRECTORY_data
+global precip_at_sl_LGM
+global lapse_LGM 
 
 addpath(DIRECTORY_data)
 
@@ -18,11 +18,14 @@ bdot2 = 0;
 bdot3 = 0;
 bdot4 = 0;
 bdot5 = 0;
+bdot6 = 0;
 
 
 disp (' ')
 disp ('Check bdot prescribed in load_b_dot2.m')
 disp(' ')
+
+
 
 
 % Interpolate onto nodes and mesh:
@@ -39,6 +42,22 @@ load DH_accum_width_velocity.mat
 load Hat_RACMO2_1.mat
 load DH_surf_bed.mat
 
+%% 01/03/19 TH trying to minimize lapse rate parameters for bdot at LGM
+if bdot6 == 1
+     
+    
+    Hat_bdot_LGM_lapse = precip_at_sl_LGM + lapse_LGM.*(Hat_modern_surface+...
+        linspace(400,100, length(Hat_modern_surface))');
+    
+    b_dot_use    = interp1(Hat_centerline_distance, Hat_bdot_LGM_lapse, x_nodes);
+    
+  for ii = 1:N_t_nodes2
+    b_dot_nodes(ii,:) = b_dot_use;
+  end
+    
+end
+
+%%
 if bdot1 + bdot2 + bdot3 + bdot4 + bdot5 == 1
 
 if (bdot1 == 1)
@@ -48,14 +67,9 @@ if (bdot1 == 1)
 
 % if you want to calculate from a lapse rate similar to Bliss et al. (2011) for Taylor glacier 
 precip_at_sl = -0.35;
-lapse = 0.35/1500;
+lapse        = 0.35/1500;
 Hat_bdot_modern_lapse = precip_at_sl + lapse.*Hat_modern_surface;
 b_dot_use = interp1(Hat_centerline_distance, Hat_bdot_modern_lapse, x_nodes);
-
-% % OLD:
-% % % b_dot_use = interp1(Hat_accumulation_A_centerline_distance, Hat_accumulation_A, x_nodes);
-% % b_dot_use = -interp1(Hat_accumulation_centerline_distance, Hat_accumulation_A, x_nodes);
-%  
 
 
 elseif (bdot2 == 1)
@@ -84,10 +98,10 @@ elseif (bdot5 == 1)
 % ------------------------------
   b_dot_use = interp1(1e4:1e3:85e3, Hat_SMB, x_nodes);
 
-for ii = 1:N_t_nodes2
-b_dot_nodes(ii,:) = b_dot_use;
 end
 
+for ii = 1:N_t_nodes2
+b_dot_nodes(ii,:) = b_dot_use;
 end
 
 elseif bdot1 + bdot2 + bdot3 + bdot4 + bdot5 > 1
@@ -112,15 +126,21 @@ end
 
 
 %% 11/25/18 Experimenting with changing accumulation linearly with time
-% b_dot_LGM = interp1(Hat_accumulation_centerline_distance, Hat_accumulation_R*0.6, x_nodes);
-% b_dot_modern = interp1(Hat_accumulation_centerline_distance, Hat_accumulation_R, x_nodes);
 % 
-%  weight = linspace(1,0, N_t_nodes2);
-% for ii = 1:N_t_nodes2
-%     b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
+% load('TEST_DH/output/LGM_b_dot/precip_0_2lapse_-6_6667e-05.mat', 'b_dot_P2', 'b_dot_edges2');
+% b_dot_P_LGM = b_dot_P2(end,:); b_dot_edges_LGM = b_dot_edges2; clear b_dot_P2 b_dot_edges2;
+% 
+% b_dot_P_modern = interp1(x_nodes, b_dot_use, x_P);
+% 
+% weight = linspace(1,0, length(t_P));
+% 
+% for ii = 1:length(t_P)
+%     b_dot_P(ii,:) = b_dot_P_LGM.*weight(ii) + b_dot_P_modern.*(1-weight(ii));
 % end
 
-% % Constant in time
+
+
+% Constant in time
 % % ------------------
 %  b_dot_use = interp1([x_P(1) x_P(end)], [0.3 0.3], x_P);  % Average accumulation 28 cm/yr
 %                                                           % Denton et al. (1989)                                                                                                          
@@ -155,4 +175,5 @@ end
    b_dot_edges = interp2( repmat( x_nodes, N_t_nodes2, 1 ), ...
                            repmat( t_nodes, 1, N_x_nodes2 ), ...
                            b_dot_nodes, x_edges, t_P );                                     
-                                               
+                                
+                                            

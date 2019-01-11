@@ -14,7 +14,7 @@ function [ x_nodes, t_nodes ] = load_nodes
 
 global min_search_E min_search_fs min_search_bed min_search_E_and_fs
 global lower_resolution
-
+global LGM_b_dot
 
 %   x- positions of nodes (meters)
 %   ------------------------------
@@ -34,8 +34,12 @@ end
 %   t_nodes must include the present day (t=0), as the last value!
 %   t_nodes needs to be a column vector.
 %   ------------------------------------
+
     t_nodes = [-20000:100:0]'; 
-  
+if exist('LGM_b_dot') & LGM_b_dot == 1
+    t_nodes = [-1e5:100:0]';
+end
+
 
     
 %   % For min search:  

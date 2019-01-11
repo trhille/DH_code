@@ -4,6 +4,7 @@ global S_in_global_Darwin
 
 global LGM_transient
 
+global thisrun %added by TH 12/5 to experiment with ensemble runs
 
  S_in_global_Darwin   = 367;   % surf elev at the mouth of the glacier near grounding line
                   
@@ -87,8 +88,6 @@ global LGM_transient
       Q_ext_nodes, ...
       Q_ext_P ] = load_Q( t_nodes, t_P ); 
 
-  
-      
 
 % Check if want to include tributary flux, or not.
 
@@ -96,7 +95,34 @@ if (add_tributary_flux == 0)
    flux_add_P = zeros(size(x_P));
    
 elseif (add_tributary_flux == 1)
-   flux_add_P = interp1(tributary_x, tributary_flux, X_P);
+  %initialize added flux vector
+  flux_add_P = zeros(size(x_P));
+   
+  %Distribute calculated tributary flux evenly between adjacent model nodes
+  Darwin_tributary_1_ind1 = find((abs((x_P-x_P(1)) - Darwin_tributary_1_x(1)))...
+       == min(abs((x_P - x_P(1)) - Darwin_tributary_1_x(1))));
+  Darwin_tributary_1_ind2 = find((abs((x_P-x_P(1)) - Darwin_tributary_1_x(2)))...
+       == min(abs((x_P - x_P(1)) - Darwin_tributary_1_x(2))));
+  flux_add_P(Darwin_tributary_1_ind1:Darwin_tributary_1_ind2) = ...
+      Darwin_1_flux./(Darwin_tributary_1_ind2 - Darwin_tributary_1_ind1);
+ 
+  Darwin_tributary_2_ind1 = find((abs((x_P-x_P(1)) - Darwin_tributary_2_x(1)))...
+       == min(abs((x_P - x_P(1)) - Darwin_tributary_2_x(1))));
+  Darwin_tributary_2_ind2 = find((abs((x_P-x_P(1)) - Darwin_tributary_2_x(2)))...
+       == min(abs((x_P - x_P(1)) - Darwin_tributary_2_x(2))));
+  flux_add_P(Darwin_tributary_2_ind1:Darwin_tributary_2_ind2) = ...
+      flux_add_P(Darwin_tributary_2_ind1:Darwin_tributary_2_ind2) + ...
+      Darwin_2_flux./(Darwin_tributary_2_ind2 - Darwin_tributary_2_ind1);
+  
+  Darwin_tributary_3_ind1 = find((abs((x_P-x_P(1)) - Darwin_tributary_3_x(1)))...
+       == min(abs((x_P - x_P(1)) - Darwin_tributary_3_x(1))));
+  Darwin_tributary_3_ind2 = find((abs((x_P-x_P(1)) - Darwin_tributary_3_x(2)))...
+       == min(abs((x_P - x_P(1)) - Darwin_tributary_3_x(2))));
+  flux_add_P(Darwin_tributary_3_ind1:Darwin_tributary_3_ind2) = ...
+      flux_add_P(Darwin_tributary_3_ind1:Darwin_tributary_3_ind2) + ...
+      Darwin_3_flux./(Darwin_tributary_3_ind2 - Darwin_tributary_3_ind1);
+  flux_add_P = -flux_add_P./(W_P.*5500);
+
 end
 
 [ flux_add_w, ...
@@ -153,7 +179,7 @@ if (linear_temperature == 1)   % temperature varies linearly from surface to bed
 
 elseif (prescribe_temperature == 1)    
       
-   T_z_use = 273.15 - 15;     
+   T_z_use = 273.15 - 3;     
    T_field_0 = repmat(T_z_use, N_x_mesh, N_z);   % replicate everywhere 
                                   
    % Or add in something more realistic?
@@ -178,16 +204,19 @@ end   % if statement on temperature options
   
   if (LGM_transient == 1)
       
-%     load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
-    load DH_DATA/Boundary_conditions/Diamond_Hill/SPRATT_ens.mat
-    
- %   S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0], [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern' Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
+    load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
+        Smooth9ka.HeightAboveModern(1:4) = 500; %account for lower LGM surface elevation than previously used
+% S_at_GL = S_0_in + interp1([t_P(1) -13000 -Smooth9ka.Time' 0],...
+%     [0 Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern'...
+%     Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
+%   S_at_GL = (S_0_in + 500).*ones(length(t_P));
+  S_at_GL = S_0_in + interp1([t_P(1) -Stepwise9ka.Time' 0],...
+      [Stepwise9ka.HeightAboveModern(1) Stepwise9ka.HeightAboveModern'...
+      Stepwise9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
   
- %  S_at_GL = S_0_in + interp1([t_P(1) -Stepwise9ka.Time' 0], [Stepwise9ka.HeightAboveModern(1) Stepwise9ka.HeightAboveModern' Stepwise9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
-  
- %   S_at_GL = S_0_in + interp1([PollardModel.Time'], [PollardModel.HeightAboveModern'], t_P,'linear', 'extrap');
+%  S_at_GL = S_0_in + interp1([PollardModel.Time'], [PollardModel.HeightAboveModern'], t_P,'linear', 'extrap');
  
-S_at_GL = S_0_in + interp1([SPRATT_tau2000_ocfac1_shelf5.Time'], [SPRATT_tau2000_ocfac1_shelf5.HeightAboveModern'], t_P,'linear', 'extrap');
+% S_at_GL = S_0_in + interp1([thisrun.Time'], [thisrun.HeightAboveModern'], t_P,'linear', 'extrap');
   
   
     disp (' ')

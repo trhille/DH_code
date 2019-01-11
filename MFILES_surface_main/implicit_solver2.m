@@ -1,6 +1,6 @@
 function [ h_P_t, h_w_t, h_e_t, ...
            S_P_t, S_w_t, S_e_t, ...
-           flux_edges_dyn_t     ] = implicit_solver2( h_P, S_P, ...
+           flux_edges_dyn_t, kill     ] = implicit_solver2( h_P, S_P, ...
                                                  x_P, x_w, x_e, ...
                                                  dx_P, dx_w, dx_e, ...
                                                  B_P, B_w, B_e, ...
@@ -38,7 +38,9 @@ global rho_ice  g  n
 global itnum_max 
 global res_stop2
 global calculate_residual
+global LGM_b_dot
 
+kill = 0;
 % global deformation_only deformation_plus_sliding sliding_only ...
 %        deformation_sliding_lateraldrag deformation_sliding_longstress ...
 %        deformation_sliding_lateraldrag_longstress
@@ -207,9 +209,15 @@ end
   
   if (isempty(find(sign(h_P_t) == -1)) ~= 1)
   disp(' thickness less than zero!')
+  if LGM_b_dot == 1
+      kill = 1;
+  return
+  else
+     
   stop
-  end
   
+  end
+  end
       
   [ h_w_t, h_e_t ] = get_edge_values_quadratic( h_P_t, x_P, x_w, x_e, ...
                                                 dx_P, dx_w, dx_e );

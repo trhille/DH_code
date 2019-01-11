@@ -5,7 +5,7 @@
 % %OLD sets:
 % load min1.mat
 % load min2.mat
-% load SAVE_runs_with_warmerice/pollard_min3.mat
+% load SAVE_runs_with_warmerice/smooth_9ka_min3.mat
 % load min4.mat
 % load min5.mat
 % load min6.mat
@@ -56,26 +56,26 @@
 
 % % PICK ONE:
 
-% %load minE_values.mat
-% load minfs_values.mat
+%load SAVE_runs_with_warmerice/minE_values.mat
+%load SAVE_runs_with_warmerice/minfs_values.mat
 load SAVE_runs_with_warmerice/minE_and_fs_values.mat
 % 
 % % Interpolate to compare running on finer xgrid, whereas min search was
 % % done using "lower_resolution = 1"; interpolation can give negative (and
 % % then imaginary in S!) so just take absolute value as simple fix.
-%  E_P = abs(interp1(x_P_min, E_P_min, x_P, 'linear', 'extrap'));
-%  E_w = abs(interp1(x_w_min, E_w_min, x_w, 'linear', 'extrap'));
-%  E_e = abs(interp1(x_e_min, E_e_min, x_e, 'linear', 'extrap'));
-%  fs_P = abs(interp1(x_P_min, fs_P_min, x_P, 'linear', 'extrap'));
-%  fs_w = abs(interp1(x_w_min, fs_w_min, x_w, 'linear', 'extrap'));
-%  fs_e = abs(interp1(x_e_min, fs_e_min, x_e, 'linear', 'extrap'));
-% 
-%  E_P2 = abs(interp1(x_P2_min, E_P2_min, x_P2, 'linear', 'extrap'));
-%  E_w2 = abs(interp1(x_w2_min, E_w2_min, x_w2, 'linear', 'extrap'));
-%  E_e2 = abs(interp1(x_e2_min, E_e2_min, x_e2, 'linear', 'extrap'));
-%  fs_P2 = abs(interp1(x_P2_min, fs_P2_min, x_P2, 'linear', 'extrap'));
-%  fs_w2 = abs(interp1(x_w2_min, fs_w2_min, x_w2, 'linear', 'extrap'));
-%  fs_e2 = abs(interp1(x_e2_min, fs_e2_min, x_e2, 'linear', 'extrap'));
+ E_P = abs(interp1(x_P_min, E_P_min, x_P, 'linear', 'extrap'));
+ E_w = abs(interp1(x_w_min, E_w_min, x_w, 'linear', 'extrap'));
+ E_e = abs(interp1(x_e_min, E_e_min, x_e, 'linear', 'extrap'));
+ fs_P = abs(interp1(x_P_min, fs_P_min, x_P, 'linear', 'extrap'));
+ fs_w = abs(interp1(x_w_min, fs_w_min, x_w, 'linear', 'extrap'));
+ fs_e = abs(interp1(x_e_min, fs_e_min, x_e, 'linear', 'extrap'));
+
+ E_P2 = abs(interp1(x_P2_min, E_P2_min, x_P2, 'linear', 'extrap'));
+ E_w2 = abs(interp1(x_w2_min, E_w2_min, x_w2, 'linear', 'extrap'));
+ E_e2 = abs(interp1(x_e2_min, E_e2_min, x_e2, 'linear', 'extrap'));
+ fs_P2 = abs(interp1(x_P2_min, fs_P2_min, x_P2, 'linear', 'extrap'));
+ fs_w2 = abs(interp1(x_w2_min, fs_w2_min, x_w2, 'linear', 'extrap'));
+ fs_e2 = abs(interp1(x_e2_min, fs_e2_min, x_e2, 'linear', 'extrap'));
 
 
  

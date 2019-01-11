@@ -142,6 +142,7 @@ global rho_ice g
 % solve
 % =====
     M = diag(a_P) + diag(-a_E(1:N_x-1),1) + diag(-a_W(2:N_x),-1);
+
     % tridiagonl matrix.
  
 %     soln_pinv = M\rhs';   % slower!   
@@ -158,7 +159,7 @@ global rho_ice g
 % must invoke underrelaxation
 % ============================
   S_P_t = ((1-beta2)*S_P_t_guess)+(beta2*S_P_t_soln);
-  
+ 
                     
 
    

@@ -83,12 +83,34 @@ global S_in_global_Hatherton
       Q_ext_nodes2, ...
       Q_ext_P2 ] = load_Q2( t_nodes2, t_P2 ); 
 
-  
+
    
   
   
 if (add_tributary_flux == 0)
    flux_add_P2 = zeros(size(x_P2));
+   
+elseif (add_tributary_flux == 1)
+  %initialize added flux vector
+  flux_add_P2 = zeros(size(x_P2));
+   
+  %Distribute calculated tributary flux evenly between adjacent model nodes
+  Hatherton_tributary_1_ind1 = find((abs((x_P2-x_P2(1)) - Hatherton_tributary_1_x(1)))...
+       == min(abs((x_P2 - x_P2(1)) - Hatherton_tributary_1_x(1))));
+  Hatherton_tributary_1_ind2 = find((abs((x_P2-x_P2(1)) - Hatherton_tributary_1_x(2)))...
+       == min(abs((x_P2 - x_P2(1)) - Hatherton_tributary_1_x(2))));
+  flux_add_P2(Hatherton_tributary_1_ind1:Hatherton_tributary_1_ind2) = ...
+      Hatherton_1_flux./(Hatherton_tributary_1_ind2 - Hatherton_tributary_1_ind1);
+ 
+  Hatherton_tributary_2_ind1 = find((abs((x_P2-x_P2(1)) - Hatherton_tributary_2_x(1)))...
+       == min(abs((x_P2 - x_P2(1)) - Hatherton_tributary_2_x(1))));
+  Hatherton_tributary_2_ind2 = find((abs((x_P2-x_P2(1)) - Hatherton_tributary_2_x(2)))...
+       == min(abs((x_P2 - x_P2(1)) - Hatherton_tributary_2_x(2))));
+  flux_add_P2(Hatherton_tributary_2_ind1:Hatherton_tributary_2_ind2) = ...
+      flux_add_P2(Hatherton_tributary_2_ind1:Hatherton_tributary_2_ind2) + ...
+      Hatherton_2_flux./(Hatherton_tributary_2_ind2 - Hatherton_tributary_2_ind1);
+  
+ flux_add_P2 = -flux_add_P2./(W_P2*5000);
 end
 
 [ flux_add_w2, ...
@@ -140,7 +162,7 @@ if (linear_temperature == 1)   % temperature varies linearly from surface to bed
 
 elseif (prescribe_temperature == 1)    
       
-   T_z_use2 = 273.15 - 15;     
+   T_z_use2 = 273.15 - 5;     
    T_field_02 = repmat(T_z_use2, N_x_mesh2, N_z2);   % replicate everywhere 
                                   
    % Or add in something more realistic?

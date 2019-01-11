@@ -73,7 +73,62 @@ global LGM_steady_state
 global LGM_transient
 
 
-% - - - - - - - - -  - - - - - - - - - - - - -  
+% -------------------------------------------------------------------------
+% STEP 1: Run minimization scheme to find best E and fs that give match to
+% surface elevation and surface velocity at Darwin and at Hatherton
+
+steady_state_only = 0;  % =1 to run.
+
+% Need to set one of the min_search algorithms = 1 at a time.
+% THEN, need to set corresponding flags for deformation and/or sliding.
+
+% Simple way to try and find values of boundary conditions / parameters 
+% that may be poorly constrained:
+% "E": enhancement factor on shear deformation
+% "bed": bed topography
+% "width": flowband width
+% "fs": sliding factor in simple partitioning between deformation/sliding
+% Refine estimates of these parameters - one at a time! - to better match
+% ice-surface elevation and/or ice-surface velocity data
+min_search_E        = 0;   
+min_search_fs       = 0; 
+min_search_E_and_fs = 0;
+min_search_bed      = 0;  % not used!
+
+lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
+                        % Likely not as accurate, especially for gradients
+                        % at boundaries (e.g., dS/dx)
+
+                        
+% - - - - - - - - - - - - - - - - - - - - - - -                         
+
+
+% - - - - - - - - - - - - - - - - - - - - - - -                                                 
+% Only one of these should be set = 1 at a time. 
+% For Darwin:
+deformation_only                           = 0;
+sliding_only                               = 0; 
+deformation_plus_sliding                   = 1; 
+deformation_sliding_lateraldrag            = 0; % not included yet!
+deformation_sliding_longstress             = 0; % not included yet!
+deformation_sliding_lateraldrag_longstress = 0; % not included yet!
+
+% For Hatherton (always as XX2)
+deformation_only2                           = 0;
+sliding_only2                               = 0; 
+deformation_plus_sliding2                   = 1; 
+deformation_sliding_lateraldrag2            = 0; % not included yet!
+deformation_sliding_longstress2             = 0; % not included yet!
+deformation_sliding_lateraldrag_longstress2 = 0; % not included yet!
+% - - - - - - - - - - - - - - - - - - - - - - -                         
+
+
+% Go into run_min_search_E, run_min_search_fs, or run_min_search_E_and_fs
+% and run separately for Darwin (1) and Hatherton (2) need to set at top of iteration
+% loop. I should make this better, sorry -- if I get time to do it, I will!
+
+% After each minimization run I saved one file for each glacier:
+
 
 % -------------------------------------------------------------------------
 % STEP 1: Run minimization scheme to find best E and fs that give match to
@@ -214,8 +269,7 @@ LGM_transient    = 1;   % Sets prescribed S_at_GL for Darwin
 
 
 
-% -------------------------------------------------------------------------
-
+% -------------------------------------------------------------------------1
 % -------------------------------------------------------------------------
 % Make sure all other boundary conditions are set the way you want them,
 % basically everything in TEST_DH directory. 
@@ -230,7 +284,7 @@ LGM_transient    = 1;   % Sets prescribed S_at_GL for Darwin
 
 
 
-add_tributary_flux       = 0;   % add flux from tributaries at locations 
+add_tributary_flux       = 1;   % add flux from tributaries at locations 
                                 % along length of flowline; keep=0 for now.
 
 % initial value, or initial *guess* of temperature: must set one of these = 1!      
@@ -401,7 +455,9 @@ elseif (steady_state_only == 0)  % Transient runs.
 
  % Grounding line history set in MAIN_Darwin.m
  
-    
+precip_at_sl = -0.35;
+lapse = 0.35/1500;
+
  for time = 1:N_t_mesh
      
      time2 = time;  % Set this in code, but didn't really need it!
@@ -417,18 +473,7 @@ elseif (steady_state_only == 0)  % Transient runs.
        disp(' ')
 
        
-% update surface mass balance if using lapse rate
-% precip_at_sl = -0.35;
-% lapse        = 0.35/1500;
-% if time>1
-% b_dot_P(time,:) = precip_at_sl + lapse * S_P(time-1,:);
-% 
-% b_dot_edges(time, :) = interp1(x_P, b_dot_P(time,:), x_edges,'linear', 'extrap');
-% 
-% b_dot_P2(time,:) = precip_at_sl + lapse * S_P2(time-1,:);
-% 
-% b_dot_edges2(time, :) = interp1(x_P2, b_dot_P2(time,:), x_edges2,'linear', 'extrap');
-% end
+
 % -------------------------------------------------------------------------    
     calculate_surface_Darwin;
 % -------------------------------------------------------------------------
@@ -448,10 +493,11 @@ S_at_GL2(time2)       = S_0_in2;
     calculate_surface_Hatherton;
       disp('Calculating for Hatherton')
 % -------------------------------------------------------------------------
-    
+
     
 % Then, setup flux added at 17 km from Hatherton...
 flux_add_P(index_xpos_Hatherton_P) = flux_edges_dyn_xt2(time, 1) / W_P2(1);
+
 [ flux_add_w, ...
   flux_add_e ] = get_edge_values_quadratic ...
                                   ( flux_add_P, x_P, x_w, x_e, dx_P, dx_w, dx_e );
@@ -460,6 +506,14 @@ flux_add_P(index_xpos_Hatherton_P) = flux_edges_dyn_xt2(time, 1) / W_P2(1);
    calculate_surface_Darwin;
       disp('Recalculating for Darwin')
 % -------------------------------------------------------------------------
+
+%recalculate next b_dot
+% [ b_dot_edges(time+1,:), b_dot_P(time+1,:) ] = ...
+%     iterate_bdot( S_P(time,:), precip_at_sl, lapse, x_P, x_edges );
+% 
+% 
+% [ b_dot_edges2(time+1,:), b_dot_P2(time+1,:) ] = ...
+%     iterate_bdot( S_P2(time,:), precip_at_sl, lapse, x_P2, x_edges2 );
 
  end   % for loop on time
 
@@ -577,7 +631,7 @@ title('HATHERTON')
 
 end
 
-
+ 
 % % Can this really be used to evaluate relative importance of dynamics vs.
 % % mass balance ... holds for ice mass frozen to the bed.
 % BDM_velocity      = interp1(measures_centerline_distance, measures_flowspeed, [x_P]);
