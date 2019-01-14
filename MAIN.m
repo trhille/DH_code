@@ -72,12 +72,11 @@ global LGM_steady_state
 
 global LGM_transient
 
-
 % -------------------------------------------------------------------------
 % STEP 1: Run minimization scheme to find best E and fs that give match to
 % surface elevation and surface velocity at Darwin and at Hatherton
 
-steady_state_only = 0;  % =1 to run.
+steady_state_only = 1;  % =1 to run.
 
 % Need to set one of the min_search algorithms = 1 at a time.
 % THEN, need to set corresponding flags for deformation and/or sliding.
@@ -92,64 +91,7 @@ steady_state_only = 0;  % =1 to run.
 % ice-surface elevation and/or ice-surface velocity data
 min_search_E        = 0;   
 min_search_fs       = 0; 
-min_search_E_and_fs = 0;
-min_search_bed      = 0;  % not used!
-
-lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
-                        % Likely not as accurate, especially for gradients
-                        % at boundaries (e.g., dS/dx)
-
-                        
-% - - - - - - - - - - - - - - - - - - - - - - -                         
-
-
-% - - - - - - - - - - - - - - - - - - - - - - -                                                 
-% Only one of these should be set = 1 at a time. 
-% For Darwin:
-deformation_only                           = 0;
-sliding_only                               = 0; 
-deformation_plus_sliding                   = 1; 
-deformation_sliding_lateraldrag            = 0; % not included yet!
-deformation_sliding_longstress             = 0; % not included yet!
-deformation_sliding_lateraldrag_longstress = 0; % not included yet!
-
-% For Hatherton (always as XX2)
-deformation_only2                           = 0;
-sliding_only2                               = 0; 
-deformation_plus_sliding2                   = 1; 
-deformation_sliding_lateraldrag2            = 0; % not included yet!
-deformation_sliding_longstress2             = 0; % not included yet!
-deformation_sliding_lateraldrag_longstress2 = 0; % not included yet!
-% - - - - - - - - - - - - - - - - - - - - - - -                         
-
-
-% Go into run_min_search_E, run_min_search_fs, or run_min_search_E_and_fs
-% and run separately for Darwin (1) and Hatherton (2) need to set at top of iteration
-% loop. I should make this better, sorry -- if I get time to do it, I will!
-
-% After each minimization run I saved one file for each glacier:
-
-
-% -------------------------------------------------------------------------
-% STEP 1: Run minimization scheme to find best E and fs that give match to
-% surface elevation and surface velocity at Darwin and at Hatherton
-
-steady_state_only = 0;  % =1 to run.
-
-% Need to set one of the min_search algorithms = 1 at a time.
-% THEN, need to set corresponding flags for deformation and/or sliding.
-
-% Simple way to try and find values of boundary conditions / parameters 
-% that may be poorly constrained:
-% "E": enhancement factor on shear deformation
-% "bed": bed topography
-% "width": flowband width
-% "fs": sliding factor in simple partitioning between deformation/sliding
-% Refine estimates of these parameters - one at a time! - to better match
-% ice-surface elevation and/or ice-surface velocity data
-min_search_E        = 0;   
-min_search_fs       = 0; 
-min_search_E_and_fs = 0;
+min_search_E_and_fs = 1;
 min_search_bed      = 0;  % not used!
 
 lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
@@ -508,12 +450,12 @@ flux_add_P(index_xpos_Hatherton_P) = flux_edges_dyn_xt2(time, 1) / W_P2(1);
 % -------------------------------------------------------------------------
 
 %recalculate next b_dot
-% [ b_dot_edges(time+1,:), b_dot_P(time+1,:) ] = ...
-%     iterate_bdot( S_P(time,:), precip_at_sl, lapse, x_P, x_edges );
-% 
-% 
-% [ b_dot_edges2(time+1,:), b_dot_P2(time+1,:) ] = ...
-%     iterate_bdot( S_P2(time,:), precip_at_sl, lapse, x_P2, x_edges2 );
+[ b_dot_edges(time+1,:), b_dot_P(time+1,:) ] = ...
+    iterate_bdot( S_P(time,:), precip_at_sl, lapse, x_P, x_edges );
+
+
+[ b_dot_edges2(time+1,:), b_dot_P2(time+1,:) ] = ...
+    iterate_bdot( S_P2(time,:), precip_at_sl, lapse, x_P2, x_edges2 );
 
  end   % for loop on time
 

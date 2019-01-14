@@ -179,7 +179,7 @@ if (linear_temperature == 1)   % temperature varies linearly from surface to bed
 
 elseif (prescribe_temperature == 1)    
       
-   T_z_use = 273.15 - 3;     
+   T_z_use = 273.15 - 15;     
    T_field_0 = repmat(T_z_use, N_x_mesh, N_z);   % replicate everywhere 
                                   
    % Or add in something more realistic?
