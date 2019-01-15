@@ -76,7 +76,7 @@ global LGM_transient
 % STEP 1: Run minimization scheme to find best E and fs that give match to
 % surface elevation and surface velocity at Darwin and at Hatherton
 
-steady_state_only = 1;  % =1 to run.
+steady_state_only = 0;  % =1 to run.
 
 % Need to set one of the min_search algorithms = 1 at a time.
 % THEN, need to set corresponding flags for deformation and/or sliding.
@@ -91,7 +91,7 @@ steady_state_only = 1;  % =1 to run.
 % ice-surface elevation and/or ice-surface velocity data
 min_search_E        = 0;   
 min_search_fs       = 0; 
-min_search_E_and_fs = 1;
+min_search_E_and_fs = 0;
 min_search_bed      = 0;  % not used!
 
 lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
@@ -449,13 +449,13 @@ flux_add_P(index_xpos_Hatherton_P) = flux_edges_dyn_xt2(time, 1) / W_P2(1);
       disp('Recalculating for Darwin')
 % -------------------------------------------------------------------------
 
-%recalculate next b_dot
-[ b_dot_edges(time+1,:), b_dot_P(time+1,:) ] = ...
-    iterate_bdot( S_P(time,:), precip_at_sl, lapse, x_P, x_edges );
-
-
-[ b_dot_edges2(time+1,:), b_dot_P2(time+1,:) ] = ...
-    iterate_bdot( S_P2(time,:), precip_at_sl, lapse, x_P2, x_edges2 );
+% %recalculate next b_dot
+% [ b_dot_edges(time+1,:), b_dot_P(time+1,:) ] = ...
+%     iterate_bdot( S_P(time,:), precip_at_sl, lapse, x_P, x_edges );
+% 
+% 
+% [ b_dot_edges2(time+1,:), b_dot_P2(time+1,:) ] = ...
+%     iterate_bdot( S_P2(time,:), precip_at_sl, lapse, x_P2, x_edges2 );
 
  end   % for loop on time
 
