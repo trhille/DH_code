@@ -256,7 +256,7 @@ end
   Q_w_t    = - sign(dS_dx_w_t) .* K_w_t .* abs(dS_dx_w_t);   % flux at western edges at time=time-1
   Q_e_t    = - sign(dS_dx_e_t) .* K_e_t .* abs(dS_dx_e_t);   % flux at eastern edges at time=time-1
  
-  
+
   flux_edges_dyn_t = [Q_w_t(1) Q_e_t];
    
 

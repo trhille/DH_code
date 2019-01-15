@@ -14,11 +14,11 @@ global lapse_LGM
 addpath(DIRECTORY_data)
 
 
-bdot1 = 1;
+bdot1 = 0;
 bdot2 = 0;
 bdot3 = 0;
 bdot4 = 0;
-bdot5 = 0;
+bdot5 = 1;
 bdot6 = 0;
 
 disp (' ')
@@ -92,11 +92,11 @@ elseif (bdot2 == 1)
 
 elseif (bdot5 == 1)
 % ------------------------------
-% OPTION 5: Use RACMO2.1 5.5 km product (best)
+% OPTION 5: Use RACMO2.1 5.5 km product
 % ------------------------------
 
   b_dot_use = interp1(1e4:1e3:151e3, Darwin_SMB, x_nodes);
- 
+%   b_dot_use(b_dot_use<0) = 0;
 
   
 end
