@@ -14,8 +14,8 @@ N_fs          = length( fs_vec );
 
 
 % % CHANGE iterations = 1 or = 2 here!!
-iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
-%iterations = 2    
+%iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
+iterations = 2    
     
    
 if (iterations == 1)
@@ -27,6 +27,11 @@ if (iterations == 1)
         Darwin_velocity     = interp1(Darwin_measures_centerline_distance, ...
                                       Darwin_measures_flowspeed, [x_w(1) x_e]);
         Darwin_surface      = S_modern;
+       [ Darwin_S_w Darwin_S_e] = get_edge_values_quadratic ( S_modern, ...
+                                         x_P, x_w, x_e, ...
+                                         dx_P, dx_w, dx_e );
+        Darwin_surface_edges = [ Darwin_S_w(1) Darwin_S_e ];
+        
         RMS_mismatch_matrix = NaN * ones(N_E, N_fs);
         
         E_edges_temp        = [E_w(1) E_e];
@@ -144,7 +149,8 @@ RMS_mismatch_matrix = NaN * ones( N_E, N_fs );
    surf_vel_estimate = (5/4) * abs(flux_edges_kin_xt(1,:)) ./ ...
                        ([W_w(1) W_e] .* [h_w(1,1) h_e(1,:)]);  % USING KIN FLUX HERE!
   
- 
+   S_edges = [ S_w(1,1) S_e(1,:) ];
+       
  % Residual
  % ========
     std_dev = 1; 
@@ -161,7 +167,7 @@ RMS_mismatch_matrix = NaN * ones( N_E, N_fs );
 %  residual = sqrt( mean( ( (abs(Darwin_velocity) - abs(surf_vel_estimate))/std_dev ).^2 ) ) + ...
 %             sqrt( mean( ( (abs(Darwin_surface) - abs(S_P(1,:)))/std_dev ).^2 ) );    
    residual = sqrt( mean( ( (abs(Darwin_velocity(xpos)) - abs(surf_vel_estimate(xpos)))/std_dev ).^2 ) ) + ...
-              sqrt( mean( ( (abs(Darwin_surface(xpos)) - abs(S_P(1,xpos)))/std_dev ).^2 ) );   
+              sqrt( mean( ( (abs(Darwin_surface_edges(xpos)) - abs(S_edges(xpos)))/std_dev ).^2 ) );   
           
   
 if (isreal(S_P(1,:)) == 0)
@@ -201,9 +207,10 @@ end  % loop over xpositions
    fs_edges_temp(xpos2) = best_fs;
    
 end
- 
- save_E  = E_edges_temp;
- save_fs = fs_edges_temp;
+
+
+% save_E  = E_edges_temp;
+% save_fs = fs_edges_temp;
                        
        
 
@@ -280,11 +287,16 @@ if (iterations == 2)
         length_run2          = length(x_edges2);
         save_mismatch2       = NaN * ones(length_run2, N_E);
         E_edges_orig2        = [E_w2(1) E_e2];
-        fs_edges_orig2       = [fs_w2(1) fs_e2];
+        fs_edges_orig2       = [fs_w2(1) fs_e2]; 
         Hat_velocity         = interp1( Hat_measures_centerline_distance, ...
                                         Hat_measures_flowspeed, x_edges2, ...
                                         'linear', 'extrap');
-        Hat_surface          = S_modern2;
+       [ Hat_S_w Hat_S_e] = get_edge_values_quadratic ( S_modern2, ...
+                                         x_P2, x_w2, x_e2, ...
+                                         dx_P2, dx_w2, dx_e2 );
+        Hat_surface_edges = [ Hat_S_w(1) Hat_S_e ];
+       
+        
         RMS_mismatch_matrix2 = NaN * ones(N_E, N_fs);
         
     
@@ -397,7 +409,8 @@ RMS_mismatch_matrix2 = NaN * ones( N_E, N_fs );
  flux_edges_dyn_xt2(1,1)    = Q_0_in2; 
                                         
          
-
+   S_edges2 = [ S_w2(1,1) S_e2(1,:) ];
+ 
  
  % Velocity
  % ========
@@ -421,9 +434,8 @@ RMS_mismatch_matrix2 = NaN * ones( N_E, N_fs );
  %            sqrt( mean( ( (abs(Hat_surface) - abs(S_P2(1,:)))/std_dev ).^2 ) );    
  
  residual2 = sqrt( mean( ( (abs(Hat_velocity(xpos2)) - abs(surf_vel_estimate2(xpos2)))/std_dev ).^2 ) ) + ...
-              sqrt( mean( ( (abs(Hat_surface(xpos2)) - abs(S_P2(1,xpos2)))/std_dev ).^2 ) );   
+              sqrt( mean( ( (abs(Hat_surface_edges(xpos2)) - abs(S_edges2(xpos2)))/std_dev ).^2 ) );   
           
-  
   
   
  if (isreal(S_P2(time2,:)) == 0)

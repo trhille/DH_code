@@ -33,7 +33,7 @@ function  [ Q_0_in, ...
 % % Linearly decreasing flux:
 % % -------------------------
 %   Q_ext_L_nodes = 0 * ones(size(t_nodes));
-%  Q_ext_R_nodes = interp1([t_nodes(1) t_nodes(end)], [75e4 0], t_nodes);
+%   Q_ext_R_nodes = interp1([t_nodes(1) t_nodes(end)], [75e4 0], t_nodes);
       
   
 

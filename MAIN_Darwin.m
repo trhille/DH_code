@@ -205,7 +205,7 @@ end   % if statement on temperature options
   if (LGM_transient == 1)
       
     load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
-        Smooth9ka.HeightAboveModern(1:4) = 950; %account for lower LGM surface elevation than previously used
+        Smooth9ka.HeightAboveModern(1:4) = 500; %account for lower LGM surface elevation than previously used
 S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0],...
     [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern'...
     Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');

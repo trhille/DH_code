@@ -96,8 +96,6 @@ elseif (bdot5 == 1)
 % ------------------------------
 
   b_dot_use = interp1(1e4:1e3:151e3, Darwin_SMB, x_nodes);
-%   b_dot_use(b_dot_use<0) = 0;
-
   
 end
 
