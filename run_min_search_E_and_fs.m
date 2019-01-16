@@ -14,8 +14,8 @@ N_fs          = length( fs_vec );
 
 
 % % CHANGE iterations = 1 or = 2 here!!
-%iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
-iterations = 2    
+iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
+%iterations = 2    
     
    
 if (iterations == 1)
@@ -148,7 +148,12 @@ RMS_mismatch_matrix = NaN * ones( N_E, N_fs );
  % ========
    surf_vel_estimate = (5/4) * abs(flux_edges_kin_xt(1,:)) ./ ...
                        ([W_w(1) W_e] .* [h_w(1,1) h_e(1,:)]);  % USING KIN FLUX HERE!
-  
+ 
+                 
+   [ S_w, S_e ] = get_edge_values_quadratic ( S_P(time,:), ...
+                                                 x_P, x_w, x_e, ...
+                                                 dx_P, dx_w, dx_e );
+               
    S_edges = [ S_w(1,1) S_e(1,:) ];
        
  % Residual
@@ -408,7 +413,10 @@ RMS_mismatch_matrix2 = NaN * ones( N_E, N_fs );
                                                                        
  flux_edges_dyn_xt2(1,1)    = Q_0_in2; 
                                         
-         
+                   
+   [ S_w2, S_e2 ] = get_edge_values_quadratic ( S_P2(time,:), ...
+                                                 x_P2, x_w2, x_e2, ...
+                                                 dx_P2, dx_w2, dx_e2 );         
    S_edges2 = [ S_w2(1,1) S_e2(1,:) ];
  
  
