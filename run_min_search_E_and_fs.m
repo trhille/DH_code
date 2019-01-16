@@ -14,8 +14,8 @@ N_fs          = length( fs_vec );
 
 
 % % CHANGE iterations = 1 or = 2 here!!
-%iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
-iterations = 2    
+iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
+%iterations = 2    
     
    
 if (iterations == 1)
