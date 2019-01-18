@@ -59,8 +59,10 @@
 %load SAVE_runs_with_warmerice/minE_values.mat
 %load SAVE_runs_with_warmerice/minfs_values.mat
 %load SAVE_runs_with_warmerice/minE_and_fs_values.mat
+% load TEST_DH/output/RACMO2.1_new/E_and_fs_values.mat
 load TEST_DH/output/RACMO2.1/E_and_fs_values.mat
-% 
+
+
 % % Interpolate to compare running on finer xgrid, whereas min search was
 % % done using "lower_resolution = 1"; interpolation can give negative (and
 % % then imaginary in S!) so just take absolute value as simple fix.
@@ -78,6 +80,22 @@ load TEST_DH/output/RACMO2.1/E_and_fs_values.mat
  fs_w2 = abs(interp1(x_w2_min, fs_w2_min, x_w2, 'linear', 'extrap'));
  fs_e2 = abs(interp1(x_e2_min, fs_e2_min, x_e2, 'linear', 'extrap'));
 
+ 
+ %% Do you want to smooth it?
+%  
+%  E_P = smooth(E_P)';
+%  E_P2 = smooth(E_P2)';
+%  E_w = smooth(E_w)';
+%  E_w2 = smooth(E_w2)';
+%  E_e = smooth(E_e)';
+%  E_e2 = smooth(E_e2)';
+%  
+%  fs_P = 10.^smooth(log10(fs_P))';
+%  fs_P2 = 10.^smooth(log10(fs_P2))';
+%  fs_w = 10.^smooth(log10(fs_w))';
+%  fs_w2 = 10.^smooth(log10(fs_w2))';
+%  fs_e = 10.^smooth(log10(fs_e))';
+%  fs_e2 = 10.^smooth(log10(fs_e2))';
 
  
  
