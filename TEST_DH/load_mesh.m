@@ -29,12 +29,12 @@ global lower_resolution
 if ( (lower_resolution == 1) || (min_search_E == 1) || (min_search_bed == 1) || (min_search_fs == 1) || (min_search_E_and_fs == 1) )
     
     N_t = 201;
-    N_x = 71;
+    N_x = 142; % 71;
     
 else
     
     N_t = 201;
-    N_x = 142; % 283; % 142; 
+    N_x = 142; % 71; % 283; % 142; 
     
 end
     

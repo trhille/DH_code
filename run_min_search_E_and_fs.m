@@ -3,12 +3,12 @@
 
 % % User needs to CHANGE iterations = 1 for Darwin, or = 2 for Haterhton!
 
-%iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
-iterations = 2    
+iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
+%iterations = 2    
 
 
 
-E_vec         = [ 0.01 0.1 0.5 1 2 4 5 6 8 10 20 50 100 ];
+E_vec         = [ 0.01 0.1 0.5 1 2 4 5 6 8 10 20 50 ];
 fs_vec        = [ 0 0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
 
 
@@ -65,7 +65,7 @@ RMS_mismatch_matrix = NaN * ones( N_E, N_fs );
    for i_fs = 1:N_fs                       
            
       fs_use               = fs_vec(i_fs);
-      fs_edges_temp(xpos) = fs_use;
+      fs_edges_temp(xpos)  = fs_use;
     
       fs_w = fs_edges_temp(1:end-1);
       fs_e = fs_edges_temp(2:end);
@@ -226,19 +226,36 @@ end  % loop over xpositions
 
 
 
-  E_w = E_edges_temp(1:end-1);
-  E_e = E_edges_temp(2:end);
-  E_P = interp1(x_edges, E_edges_temp, x_P);
-  
-  fs_w = fs_edges_temp(1:end-1);
-  fs_e = fs_edges_temp(2:end);
-  fs_P = interp1(x_edges, fs_edges_temp, x_P);
+%   E_w = E_edges_temp(1:end-1);
+%   E_e = E_edges_temp(2:end);
+%   E_P_min = interp1(x_edges, E_edges_temp, x_P);
+%   E_w_min = interp1(x_P, E_P_min, x_edges(1:end-1), 'linear', 'extrap');
+%   E_e_min = interp1(x_P, E_P_min, x_edges(2:end), 'linear', 'extrap');
+%   
+%   fs_w = fs_edges_temp(1:end-1);
+%   fs_e = fs_edges_temp(2:end);
+%   fs_P_min = interp1(x_edges, fs_edges_temp, x_P);
+%   fs_w_min = interp1(x_P, fs_P_min, x_edges(1:end-1),'linear', 'extrap');
+%   fs_e_min = interp1(x_P, fs_P_min, x_edges(2:end),'linear', 'extrap');
 
+  E_w_min = E_edges_temp(1:end-1);
+  E_e_min = E_edges_temp(2:end);
+  E_P_min = NaN;
+  
+  fs_w_min = fs_edges_temp(1:end-1);
+  fs_e_min = fs_edges_temp(2:end);
+  fs_P_min = NaN;
+  
+  x_P_min = x_P;
+  x_w_min = x_w;
+  x_e_min = x_e;
    
 end  % loop on Darwin (1) or Hatherton (2)
 
  
-
+save min_Darwin_E_and_fs.mat E_P_min E_w_min E_e_min ...
+                             fs_P_min fs_w_min fs_e_min ...
+                             x_P_min x_w_min x_e_min
 
 
 
@@ -455,15 +472,38 @@ RMS_mismatch_matrix2 = NaN * ones( N_E, N_fs );
 end  % loop over xpositions
 
 
-  E_w2 = E_edges_temp2(1:end-1);
-  E_e2 = E_edges_temp2(2:end);
-  E_P2 = interp1(x_edges2, E_edges_temp2, x_P2);
+%   E_w2 = E_edges_temp2(1:end-1);
+%   E_e2 = E_edges_temp2(2:end);
+%   E_P2_min = interp1(x_edges2, E_edges_temp2, x_P2);
+%   E_w2_min = interp1(x_P2, E_P2_min, x_edges2(1:end-1), 'linear', 'extrap');
+%   E_e2_min = interp1(x_P2, E_P2_min, x_edges2(2:end), 'linear', 'extrap');
+%   
+%   fs_w2 = fs_edges_temp2(1:end-1);
+%   fs_e2 = fs_edges_temp2(2:end);
+%   fs_P2_min = interp1(x_edges2, fs_edges_temp2, x_P2);
+%   fs_w2_min = interp1(x_P2, fs_P2_min, x_edges2(1:end-1),'linear', 'extrap');
+%   fs_e2_min = interp1(x_P2, fs_P2_min, x_edges2(2:end),'linear', 'extrap');
   
-  fs_w2 = fs_edges_temp2(1:end-1);
-  fs_e2 = fs_edges_temp2(2:end);
-  fs_P2 = interp1(x_edges2, fs_edges_temp2, x_P2);
+  E_w2_min = E_edges_temp2(1:end-1);
+  E_e2_min = E_edges_temp2(2:end);
+  E_P2_min = NaN;
+  
+  fs_w2_min = fs_edges_temp2(1:end-1);
+  fs_e2_min = fs_edges_temp2(2:end);
+  fs_P2_min = NaN;
+
+  x_P2_min = x_P2;
+  x_w2_min = x_w2;
+  x_e2_min = x_e2;
 
 
 end  % loop over iterations 1 or 2
            
  
+save min_Hat_E_and_fs.mat E_P2_min E_w2_min E_e2_min ...
+                          fs_P2_min fs_w2_min fs_e2_min ...
+                          x_P2_min x_w2_min x_e2_min
+
+
+
+

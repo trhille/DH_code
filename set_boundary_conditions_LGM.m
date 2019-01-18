@@ -46,7 +46,7 @@
 %  save minfs_values.mat x_P_min x_w_min x_e_min E_P_min E_w_min E_e_min ...
 %                       x_P2_min x_w2_min x_e2_min E_P2_min E_w2_min E_e2_min ...
 %                       fs_P_min fs_w_min fs_e_min fs_P2_min fs_w2_min fs_e2_min
-
+% 
 % % -------------------------------------------------------------------------
 
 
@@ -56,28 +56,53 @@
 
 % % PICK ONE:
 
-%load SAVE_runs_with_warmerice/minE_values.mat
-%load SAVE_runs_with_warmerice/minfs_values.mat
-%load SAVE_runs_with_warmerice/minE_and_fs_values.mat
-load TEST_DH/output/RACMO2.1/E_and_fs_values.mat
+% %load SAVE_runs_with_warmerice/minE_values.mat
+% %load SAVE_runs_with_warmerice/minfs_values.mat
+% load SAVE_runs_with_warmerice/minE_and_fs_values.mat
 % 
-% % Interpolate to compare running on finer xgrid, whereas min search was
-% % done using "lower_resolution = 1"; interpolation can give negative (and
-% % then imaginary in S!) so just take absolute value as simple fix.
- E_P = abs(interp1(x_P_min, E_P_min, x_P, 'linear', 'extrap'));
+%  
+% % % Interpolate to compare running on finer xgrid, whereas min search was
+% % % done using "lower_resolution = 1"; interpolation can give negative (and
+% % % then imaginary in S!) so just take absolute value as simple fix.
+%  
+% E_P = abs(interp1(x_P_min, E_P_min, x_P, 'linear', 'extrap'));
+% fs_P = abs(interp1(x_P_min, fs_P_min, x_P, 'linear', 'extrap'));
+% E_P2 = abs(interp1(x_P2_min, E_P2_min, x_P2, 'linear', 'extrap'));
+% fs_P2 = abs(interp1(x_P2_min, fs_P2_min, x_P2, 'linear', 'extrap'));
+%  
+%  E_w = abs(interp1(x_w_min, E_w_min, x_w, 'linear', 'extrap'));
+%  E_e = abs(interp1(x_e_min, E_e_min, x_e, 'linear', 'extrap'));
+%  fs_w = abs(interp1(x_w_min, fs_w_min, x_w, 'linear', 'extrap'));
+%  fs_e = abs(interp1(x_e_min, fs_e_min, x_e, 'linear', 'extrap'));
+% 
+%  E_w2 = abs(interp1(x_w2_min, E_w2_min, x_w2, 'linear', 'extrap'));
+%  E_e2 = abs(interp1(x_e2_min, E_e2_min, x_e2, 'linear', 'extrap'));
+%  fs_w2 = abs(interp1(x_w2_min, fs_w2_min, x_w2, 'linear', 'extrap'));
+%  fs_e2 = abs(interp1(x_e2_min, fs_e2_min, x_e2, 'linear', 'extrap'));
+
+ 
+ 
+ 
+load SAVE_min_values_on_edges/min_Darwin_E_and_fs.mat
+load SAVE_min_values_on_edges/min_Hat_E_and_fs.mat
+ 
  E_w = abs(interp1(x_w_min, E_w_min, x_w, 'linear', 'extrap'));
  E_e = abs(interp1(x_e_min, E_e_min, x_e, 'linear', 'extrap'));
- fs_P = abs(interp1(x_P_min, fs_P_min, x_P, 'linear', 'extrap'));
  fs_w = abs(interp1(x_w_min, fs_w_min, x_w, 'linear', 'extrap'));
  fs_e = abs(interp1(x_e_min, fs_e_min, x_e, 'linear', 'extrap'));
 
- E_P2 = abs(interp1(x_P2_min, E_P2_min, x_P2, 'linear', 'extrap'));
  E_w2 = abs(interp1(x_w2_min, E_w2_min, x_w2, 'linear', 'extrap'));
  E_e2 = abs(interp1(x_e2_min, E_e2_min, x_e2, 'linear', 'extrap'));
- fs_P2 = abs(interp1(x_P2_min, fs_P2_min, x_P2, 'linear', 'extrap'));
  fs_w2 = abs(interp1(x_w2_min, fs_w2_min, x_w2, 'linear', 'extrap'));
  fs_e2 = abs(interp1(x_e2_min, fs_e2_min, x_e2, 'linear', 'extrap'));
 
 
+% Try this when finding values from min on edge points:
+ E_P   = interp1([x_w_min(1) x_e_min], [E_w_min(1) E_e_min], x_P, 'linear', 'extrap');
+ fs_P  = interp1([x_w_min(1) x_e_min], [fs_w_min(1) fs_e_min], x_P, 'linear', 'extrap');
+ E_P2  = interp1([x_w2_min(1) x_e2_min], [E_w2_min(1) E_e2_min], x_P2, 'linear', 'extrap');
+ fs_P2 = interp1([x_w2_min(1) x_e2_min], [fs_w2_min(1) fs_e2_min], x_P2, 'linear', 'extrap');
  
+
+
  
