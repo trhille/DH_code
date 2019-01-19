@@ -3,12 +3,13 @@
 
 % % User needs to CHANGE iterations = 1 for Darwin, or = 2 for Haterhton!
 
-iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
-%iterations = 2    
+%iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
+iterations = 2    
 
 
 
-E_vec         = [ 0.01 0.1 0.5 1 2 4 5 6 8 10 20 50 ];
+% E_vec         = [ 0.01 0.1 0.5 1 2 4 5 6 8 10 20 50 ];
+E_vec = 1;
 fs_vec        = [ 0 0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
 
 
@@ -249,13 +250,14 @@ end  % loop over xpositions
   x_P_min = x_P;
   x_w_min = x_w;
   x_e_min = x_e;
-   
+
+save min_Darwin_E_and_fs.mat E_P_min E_w_min E_e_min ...
+                             fs_P_min fs_w_min fs_e_min ...
+                             x_P_min x_w_min x_e_min  
 end  % loop on Darwin (1) or Hatherton (2)
 
  
-save min_Darwin_E_and_fs.mat E_P_min E_w_min E_e_min ...
-                             fs_P_min fs_w_min fs_e_min ...
-                             x_P_min x_w_min x_e_min
+
 
 
 
@@ -497,13 +499,13 @@ end  % loop over xpositions
   x_e2_min = x_e2;
 
 
-end  % loop over iterations 1 or 2
-           
- 
 save min_Hat_E_and_fs.mat E_P2_min E_w2_min E_e2_min ...
                           fs_P2_min fs_w2_min fs_e2_min ...
                           x_P2_min x_w2_min x_e2_min
 
+end  % loop over iterations 1 or 2
+           
+ 
 
 
 
