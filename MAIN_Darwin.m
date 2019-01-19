@@ -210,14 +210,9 @@ end   % if statement on temperature options
     [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern'...
     Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
 
-<<<<<<< HEAD
 
 
 %   S_at_GL = (S_0_in + 500).*ones(length(t_P));
-=======
-%% Hold modern thickness constant to check if transient holds steady state
-% S_at_GL = (S_0_in).*ones(length(t_P), 1);
->>>>>>> bd3ea8b07fff448b6504c07ff781e0ad729cd0fa
 
 % % LGM ice 500 m thicker than today
 %   S_at_GL = S_0_in + interp1([t_P(1) -Stepwise9ka.Time' 0],...
