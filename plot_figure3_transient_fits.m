@@ -16,7 +16,8 @@ load LGM_steady_state_min2.mat   % to load mean elevation values of data.
 % NOTE: Need to change file names in the plot command below for smooth or step!
 
 
-run_value = [1:7];  
+%run_value = [1:7];  
+run_value = 11
 
 for kk = 1:length(run_value)
    
@@ -58,8 +59,11 @@ subplot('position', [0.15 0.61 0.8 0.2])
     text(36, 1500, 'input', 'fontangle', 'italic', 'fontsize', 14)
 
     
- load '/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Modeling/Koutnik model /DH_code/DH_DATA/all_values.mat'   
- load '/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Modeling/Koutnik model /DH_code/DH_DATA/LGM_values_use.mat'
+% load '/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Modeling/Koutnik model /DH_code/DH_DATA/all_values.mat'   
+% load '/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Modeling/Koutnik model /DH_code/DH_DATA/LGM_values_use.mat'
+ load 'DH_code/DH_DATA/all_values.mat'   
+ load 'DH_code/DH_DATA/LGM_values_use.mat'
+
  index_DAN     = find(x_P2 <= DAN_position, 1, 'last');
  index_MVfloor = find(x_P2 <= MVfloor_position, 1, 'last')-1;
  index_LWC14   = find(x_P2 <= LWC14_position, 1, 'last'); 

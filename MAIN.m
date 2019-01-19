@@ -76,7 +76,7 @@ global LGM_transient
 % STEP 1: Run minimization scheme to find best E and fs that give match to
 % surface elevation and surface velocity at Darwin and at Hatherton
 
-steady_state_only = 1;  % =1 to run.
+steady_state_only = 0;  % =1 to run.
 
 % Need to set one of the min_search algorithms = 1 at a time.
 % THEN, need to set corresponding flags for deformation and/or sliding.
@@ -91,7 +91,7 @@ steady_state_only = 1;  % =1 to run.
 % ice-surface elevation and/or ice-surface velocity data
 min_search_E        = 0;   
 min_search_fs       = 0; 
-min_search_E_and_fs = 1;
+min_search_E_and_fs = 0;
 min_search_bed      = 0;  % not used!
 
 lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
@@ -207,7 +207,7 @@ LGM_steady_state = 0;   % Run for steady state to best match LGM limits on Hathe
 % MAIN_Darwin at the bottom as "S_at_GL" -- pick between different smooth
 % and step histories to compare to data
                         
-LGM_transient    = 0;   % Sets prescribed S_at_GL for Darwin
+LGM_transient    = 1;   % Sets prescribed S_at_GL for Darwin
 
 
 
@@ -226,7 +226,7 @@ LGM_transient    = 0;   % Sets prescribed S_at_GL for Darwin
 
 
 
-add_tributary_flux       = 1;   % add flux from tributaries at locations 
+add_tributary_flux       = 0;   % add flux from tributaries at locations 
                                 % along length of flowline; keep=0 for now.
 
 % initial value, or initial *guess* of temperature: must set one of these = 1!      
@@ -400,6 +400,7 @@ elseif (steady_state_only == 0)  % Transient runs.
 precip_at_sl = -0.35;
 lapse = 0.35/1500;
 
+
  for time = 1:N_t_mesh
      
      time2 = time;  % Set this in code, but didn't really need it!
@@ -440,10 +441,13 @@ S_at_GL2(time2)       = S_0_in2;
 % Then, setup flux added at 17 km from Hatherton...
 flux_add_P(index_xpos_Hatherton_P) = flux_edges_dyn_xt2(time, 1) / W_P2(1);
 
+% By interpolating to edges the single value is smeared out. 
+% Guessing that is alright?
 [ flux_add_w, ...
   flux_add_e ] = get_edge_values_quadratic ...
                                   ( flux_add_P, x_P, x_w, x_e, dx_P, dx_w, dx_e );
 
+                              
 % -------------------------------------------------------------------------                              
    calculate_surface_Darwin;
       disp('Recalculating for Darwin')

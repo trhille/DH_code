@@ -108,68 +108,29 @@ if (time2 == 1)
 flux_edges_kin_xt2(time2,:) = [ Q_0_in2 flux_e2];   % Need to replace with Q_0_in, not extrapolated value.
 % flux_edges_kin_xt2(time2,:) = [ flux_w2(1) flux_e2];                                               
                                     
-%% 12/4/2018 This section was causing Problems with Hatherton flowing backwards! Revisit it later,
-%but leave out for now
-%  if (flux_edges_kin_xt2(time2,end) ~= 0)
-%   
-%    Q_0_in2 = Q_0_in2 - (flux_edges_kin_xt2(time2, end));
-%      
-%    [ S_P2(time2,:), h_P2(time,:), ...  
-%     dS_dx_P_xt2(time2,:),  ...
-%     dS_dx_edges_xt2(time2,:) ] = calc_h_0( x_P2, x_w2, x_e2, dx_P2, B_P2, B_w2, B_e2, ...
-%                                          W_P2, W_w2, W_e2, b_dot_edges2(time2,:), ...
-%                                          E_w2, E_e2, fs_w2, fs_e2, ...
-%                                          Q_0_in2, S_at_GL2(time2), ...
-%                                          A_eff_edges_xt2(time2,1:end-1), ...
-%                                          A_eff_edges_xt2(time2,2:end), ...
-%                                          flux_add_w2, flux_add_e2, ...
-%                                          deformation_only2, deformation_plus_sliding2, sliding_only2);
-%                                      
-%   [ h_w2(time2,:), ...
-%     h_e2(time2,:) ] = get_edge_values_quadratic( h_P2(time2,:), x_P2, x_w2, x_e2, ...
-%                                                  dx_P2, dx_w2, dx_e2 );
-%     
-%                                              
-%  end
-%                                                                       
-%%
-% Find the flux
-% ==============
+flux_edges_kin_xt2(time2,:) = flux_edges_kin_xt2(time2,:) + [flux_add_w2(1) flux_add_e2];
 
- flux_kin_P_xt2(time2,:) = calc_flux_kin( x_P2, x_P2, dx_P2, W_P2, ...
-                                        h_dot2(time2,:), b_dot_P2(time2,:), Q_0_in2 );
- 
-                                    
-[ flux_w2, flux_e2 ] = get_edge_values_quadratic ( flux_kin_P_xt2(time2,:), ...
-                                                 x_P2, x_w2, x_e2, ...
-                                                 dx_P2, dx_w2, dx_e2 );
-   
- flux_edges_kin_xt2(time2,:) = [ Q_0_in2 flux_e2];   % Need to replace with Q_0_in, not extrapolated value.
-                                               
- 
-%  flux_edges_dyn_xt2(time2,:) = calc_flux_dyn( x_edges2, [h_w2(time2,1) h_e2(time2,:)], ...
-%                                             -dS_dx_edges_xt2(time2,:), ...
-%                                             [E_w2(1) E_e2], [fs_w2(1) fs_e2], ...
-%                                             [W_w2(1) W_e2], A_eff_edges_xt2(time2,:) );   
-% 
-                                                     
+
  flux_edges_dyn_xt2(time2,:) = calc_flux_dyn( x_edges2, [h_w2(time2,1) h_e2(time2,:)], ...
                                             dS_dx_edges_xt2(time2,:), ...
                                             [E_w2(1) E_e2], [fs_w2(1) fs_e2], ...
                                             [W_w2(1) W_e2], A_eff_edges_xt2(time2,:), ...
                                             deformation_only2, deformation_plus_sliding2, sliding_only2);   
- 
- % % CHECK THIS.                                       
- flux_edges_dyn_xt2(1,1)    = Q_0_in2; %%This was Q_0_in. TH changed it to Q_0_in2 12/4/18. I think that's right, but run it by Michelle.
+                                       
+ flux_edges_dyn_xt2(1,1) = Q_0_in2; 
                  
- flux_edges_dyn_xt2(1,:) = flux_edges_dyn_xt2(1,:) + [flux_add_w2(1) flux_add_e2];
+ flux_edges_dyn_xt2(time2,:) = flux_edges_dyn_xt2(time2,:) + [flux_add_w2(1) flux_add_e2];
+
  
  
 % average_vel_estimate2 = abs(flux_edges_dyn_xt2(1,:)) ./ ([W_w2(1) W_e2] .* [h_w2(1,1) h_e2(1,:)]);
                                         
  average_vel_estimate2 = abs(flux_edges_kin_xt2(1,:)) ./ ([W_w2(1) W_e2] .* [h_w2(1,1) h_e2(1,:)]);
-                                        
+ 
+ 
  surf_vel_estimate2 = (5/4) * abs(flux_edges_kin_xt2(1,:)) ./ ([W_w2(1) W_e2] .* [h_w2(1,1) h_e2(1,:)]);
+ 
+ 
  
  
 %  plot(flux_edges_dyn_xt2(1,:),'c')
@@ -216,50 +177,6 @@ DIRECTORY_surf = 'MFILES_surface_main';
 
 addpath( DIRECTORY_surf )   
 
-% % always send the known values at time-1 and estimates of values at time
-% % (which in the first iteration are the values at time-1)
-                             
-   
-% % This is clunky... steady-state solver and first timestep of transient solver
-% % don't give the same... does difference come in because of spatial step? 
-% % Because dynamic and kinematic flux off depending on resolution? What gives?
-%  if (time2 == 2)    
-%   hold_SS_check = 9999;
-%  end
-%  while (hold_SS_check > 0.001)  % Surface profile not holding SS to 0.01 m
-%      
-%       disp(' checking holds steady state...')
-%       [ h_P_check2, h_w_check2, h_e_check2, ...
-%         S_P_check2, S_w_check2, S_e_check2, ...
-%         flux_edges_dyn_xt_check2 ] = surface_main( h_P2(time2-1,:), S_P2(time2-1,:), ...
-%                                                   x_P2, x_w2, x_e2, ...
-%                                                   dx_P2, dx_w2, dx_e2, ...
-%                                                   B_P2, B_w2, B_e2, W_P2, W_w2, W_e2,  ...
-%                                                   E_P2, E_w2, E_e2, ...
-%                                                   fs_P2, fs_w2, fs_e2, ...
-%                                                   A_eff_edges_xt2(time2-1:time2,:), ...
-%                                                   b_dot_P2(time-1:time,:), ...
-%                                                   b_dot_edges_SS2, ...
-%                                                   b_dot_edges2(time2-1:time2,:), ...
-%                                                   b_dot_P2, b_dot_edges2, ...
-%                                                   Q_out_L_SS2, Q_out_R_SS2, ...
-%                                                   S_at_GL2(time2-1:time2), ...
-%                                                   Q_ext_P2(time2-1:time2,1), ...
-%                                                   Q_ext_P2(time2-1:time2,2), ...  
-%                                                   dt_P2(time2), t_P2, time2, ...
-%                                                   deformation_only2, deformation_plus_sliding2, sliding_only2);
-%      
-%    hold_SS_check = max (S_P2(time2,:) - S_P_check2)                                
-%                                           
-%    h_P2(time2,:) = h_P_check2;
-%    h_w2(time2,:) = h_w_check2;
-%    h_e2(time2,:) = h_e_check2;
-%    S_P2(time2,:) = S_P_check2;
-%    S_w2(time2,:) = S_w_check2;
-%    S_e2(time2,:) = S_e_check2;
-%    flux_edges_dyn_xt2(time2,:) = flux_edges_dyn_xt_check2;
-%    
-%  end
 
   [ h_P2(time2,:), h_w2(time2,:), h_e2(time2,:), ...
    S_P2(time2,:), S_w2(time2,:), S_e2(time2,:), ...
@@ -279,7 +196,10 @@ addpath( DIRECTORY_surf )
                                               Q_ext_P2(time2-1:time2,1), ...
                                               Q_ext_P2(time2-1:time2,2), ...  
                                               dt_P2(time2), t_P2, time2, ...
-                                              deformation_only2, deformation_plus_sliding2, sliding_only2);
+                                              deformation_only2, ...
+                                              deformation_plus_sliding2, ...
+                                              sliding_only2, ...
+                                              flux_add_w2, flux_add_e2 );
             
                                           
 % fill matrices to save values
@@ -305,20 +225,16 @@ addpath( DIRECTORY_surf )
 [ flux_w2, flux_e2 ] = get_edge_values_quadratic ( flux_kin_P_xt2(time2,:), ...
                                                   x_P2, x_w2, x_e2, ...
                                                   dx_P2, dx_w2, dx_e2 );
+  
+ flux_edges_kin_xt2(time2,:) = [ flux_w2(1) flux_e2 ];
+                         
+ flux_edges_kin_xt2(time2,:) = flux_edges_kin_xt2(time2,:) + [flux_add_w2(1) flux_add_e2];
  
-% % If spatial step is too large, may need to do this...
-% if (flux_w(1) ~= Q_0_in)
-%     flux_w(1)
-%     flux_w(1) = Q_0_in;
-%     disp(' Kinematic flux at downstream boundary does not equal Q_0_in, likely because spatial step too large')
-%     disp(' Check at line 257 in calculate_surface')
-%     disp(' ')
-% end
-% 
-%   flux_edges_kin_xt(time,:) = [ flux_w(1) flux_e ];
+ % RESETTING to NaN because not sure why calculated values are incorrect!  
+ % Need to work on calc_flux_kin, and maybe change S_dot input because of
+ % direction of integration?
+  flux_edges_kin_xt2(time2,:) = NaN;
 
- flux_edges_kin_xt2(time2,:) = [ Q_0_in2 flux_e2];   % Need to replace with Q_0_in, not extrapolated value.
-                                                    
 
 %  flux_edges_dyn_xt2(time2,:) = calc_flux_dyn( x_edges2, [h_w2(time2,1) h_e2(time2,:)], ...
 %                                             dS_dx_edges_xt2(time2,:), ...
@@ -326,8 +242,6 @@ addpath( DIRECTORY_surf )
 %                                             [W_w2(1) W_e2], A_eff_edges_xt2(time2,:), ...
 %                                             deformation_only2, deformation_plus_sliding2, sliding_only2);   
  
-% flux_edges_dyn_xt2(1,1)    = Q_0_in2; 
-
  
  average_vel_estimate2 = abs(flux_edges_dyn_xt2(time2,:)) ./ ([W_w2(1) W_e2] .* [h_w2(1,1) h_e2(1,:)]);
                                         

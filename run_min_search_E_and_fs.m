@@ -3,14 +3,15 @@
 
 % % User needs to CHANGE iterations = 1 for Darwin, or = 2 for Haterhton!
 
-iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
-%iterations = 2    
+%iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
+iterations = 2    
 
 
 
-E_vec         = [ 0.01 0.1 0.5 1 2 4 5 6 8 10 20 50 ];
-fs_vec        = [ 0 0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
-
+%E_vec         = [ 0.01 0.1 0.5 1 2 4 5 6 8 10 20 50 ];
+E_vec = [1]; % 3 10];
+%fs_vec        = [ 0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
+fs_vec = [ 1e-13 1e-12 1e-11];
 
 N_E           = length( E_vec );
 N_fs          = length( fs_vec );
@@ -175,10 +176,11 @@ RMS_mismatch_matrix = NaN * ones( N_E, N_fs );
 %   residual = abs(Darwin_velocity(xpos) - surf_vel_estimate(xpos));  % local mismatch?
  
 % % Both:
-%  residual = sqrt( mean( ( (abs(Darwin_velocity) - abs(surf_vel_estimate))/std_dev ).^2 ) ) + ...
-%             sqrt( mean( ( (abs(Darwin_surface) - abs(S_P(1,:)))/std_dev ).^2 ) );    
-   residual = sqrt( mean( ( (abs(Darwin_velocity(xpos)) - abs(surf_vel_estimate(xpos)))/std_dev ).^2 ) ) + ...
-              sqrt( mean( ( (abs(Darwin_surface_edges(xpos)) - abs(S_edges(xpos)))/std_dev ).^2 ) );   
+   residual = sqrt( mean( ( (abs(Darwin_velocity) - abs(surf_vel_estimate))/std_dev ).^2 ) ) + ...
+              sqrt( mean( ( (abs(Darwin_surface_edges) - abs(S_edges(1,:)))/std_dev ).^2 ) );   
+
+%   residual = sqrt( mean( ( (abs(Darwin_velocity(xpos)) - abs(surf_vel_estimate(xpos)))/std_dev ).^2 ) ) + ...
+%              sqrt( mean( ( (abs(Darwin_surface_edges(xpos)) - abs(S_edges(xpos)))/std_dev ).^2 ) );   
           
   
 if (isreal(S_P(1,:)) == 0)
@@ -249,14 +251,15 @@ end  % loop over xpositions
   x_P_min = x_P;
   x_w_min = x_w;
   x_e_min = x_e;
-   
-end  % loop on Darwin (1) or Hatherton (2)
-
  
+
 save min_Darwin_E_and_fs.mat E_P_min E_w_min E_e_min ...
                              fs_P_min fs_w_min fs_e_min ...
                              x_P_min x_w_min x_e_min
+  
+end  % loop on Darwin (1) or Hatherton (2)
 
+ 
 
 
  % ------------------------------------------------------------------------
@@ -418,11 +421,11 @@ RMS_mismatch_matrix2 = NaN * ones( N_E, N_fs );
 %  residual2 = abs(Hat_velocity(xpos2) - surf_vel_estimate2(xpos2));  % local mismatch?
  
  % % Both:
- %   residual2 = sqrt( mean( ( (abs(Hat_velocity) - abs(surf_vel_estimate2))/std_dev ).^2 ) ) + ...
- %            sqrt( mean( ( (abs(Hat_surface) - abs(S_P2(1,:)))/std_dev ).^2 ) );    
+ residual2 = sqrt( mean( ( (abs(Hat_velocity) - abs(surf_vel_estimate2))/std_dev ).^2 ) ) + ...
+              sqrt( mean( ( (abs(Hat_surface_edges) - abs(S_edges2(1,:)))/std_dev ).^2 ) );   
  
- residual2 = sqrt( mean( ( (abs(Hat_velocity(xpos2)) - abs(surf_vel_estimate2(xpos2)))/std_dev ).^2 ) ) + ...
-              sqrt( mean( ( (abs(Hat_surface_edges(xpos2)) - abs(S_edges2(xpos2)))/std_dev ).^2 ) );   
+% residual2 = sqrt( mean( ( (abs(Hat_velocity(xpos2)) - abs(surf_vel_estimate2(xpos2)))/std_dev ).^2 ) ) + ...
+%              sqrt( mean( ( (abs(Hat_surface_edges(xpos2)) - abs(S_edges2(xpos2)))/std_dev ).^2 ) );   
           
   
   
@@ -496,14 +499,12 @@ end  % loop over xpositions
   x_w2_min = x_w2;
   x_e2_min = x_e2;
 
-
-end  % loop over iterations 1 or 2
-           
- 
 save min_Hat_E_and_fs.mat E_P2_min E_w2_min E_e2_min ...
                           fs_P2_min fs_w2_min fs_e2_min ...
                           x_P2_min x_w2_min x_e2_min
 
+end  % loop over iterations 1 or 2
+           
 
 
 

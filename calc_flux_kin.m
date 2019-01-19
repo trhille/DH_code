@@ -123,12 +123,13 @@
 % -------------
    %  sum columns and add Q_in_t_flux to find total flux at x_j
    %  ---------------------------------------------------------
-         flux = Q_in_t_flux + sum( Q_bits ) - sum( store_bits );
-  
-         
+         flux = Q_in_t_flux + sum( Q_bits ) + fliplr( sum( store_bits ));
+
+     % Is something wrong with store_bits term when integrating the other dir?    
+
 %  clean up the trash
 %  ------------------
- %    clear  b_i  b_i_plus1  W_i  W_i_plus1   Q_bits
+%    clear  b_i  b_i_plus1  W_i  W_i_plus1   Q_bits
 
 
      

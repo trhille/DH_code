@@ -97,7 +97,7 @@ elseif (bdot5 == 1)
 % OPTION 4: RACMO2.1 5.5 km product
 % ------------------------------
   b_dot_use = interp1(1e4:1e3:85e3, Hat_SMB, x_nodes);
-
+  
 end
 
 for ii = 1:N_t_nodes2
