@@ -206,18 +206,19 @@ end   % if statement on temperature options
       
     load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
         Smooth9ka.HeightAboveModern(1:4) = 500; %account for lower LGM surface elevation than previously used
-S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0],...
+    S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0],...
     [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern'...
     Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
 
-%% Hold modern thickness constant to check if transient holds steady state
-% S_at_GL = (S_0_in).*ones(length(t_P), 1);
 
-%% LGM ice 500 m thicker than today
+
+%   S_at_GL = (S_0_in + 500).*ones(length(t_P));
+
+% % LGM ice 500 m thicker than today
 %   S_at_GL = S_0_in + interp1([t_P(1) -Stepwise9ka.Time' 0],...
 %       [Stepwise9ka.HeightAboveModern(1) Stepwise9ka.HeightAboveModern'...
 %       Stepwise9ka.HeightAboveModern(end)], t_P,'linear', 'extrap'); 
-%% LGM ice overtops Diamond Hill
+% % LGM ice overtops Diamond Hill
   
 
 %  S_at_GL = S_0_in + interp1([PollardModel.Time'], [PollardModel.HeightAboveModern'], t_P,'linear', 'extrap');

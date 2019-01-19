@@ -55,16 +55,6 @@
 % % UNCOMMENT FOR STEP 2, 3, and 4:
 
 % % PICK ONE:
-%load SAVE_runs_with_warmerice/minE_values.mat
-%load SAVE_runs_with_warmerice/minfs_values.mat
-%load SAVE_runs_with_warmerice/minE_and_fs_values.mat
-% load TEST_DH/output/RACMO2.1_new/E_and_fs_values.mat
-%load TEST_DH/output/RACMO2.1/E_and_fs_values.mat
-
-
-% % Interpolate to compare running on finer xgrid, whereas min search was
-% % done using "lower_resolution = 1"; interpolation can give negative (and
-% % then imaginary in S!) so just take absolute value as simple fix.
 
 % %load SAVE_runs_with_warmerice/minE_values.mat
 % %load SAVE_runs_with_warmerice/minfs_values.mat
@@ -90,12 +80,20 @@
 %  fs_w2 = abs(interp1(x_w2_min, fs_w2_min, x_w2, 'linear', 'extrap'));
 %  fs_e2 = abs(interp1(x_e2_min, fs_e2_min, x_e2, 'linear', 'extrap'));
 
+<<<<<<< HEAD
 % 
 % load SAVE_min_values_on_edges/min_Darwin_E_and_fs.mat
 % load SAVE_min_values_on_edges/min_Hat_E_and_fs.mat
 
 load min_Darwin_E_and_fs.mat
 load min_Hat_E_and_fs.mat
+=======
+ 
+ 
+ 
+load SAVE_min_values_on_edges/min_Darwin_E_and_fs.mat
+load SAVE_min_values_on_edges/min_Hat_E_and_fs.mat
+>>>>>>> 9588bbc0911c02db75c70474c0953463a7ef6e89
  
  E_w = abs(interp1(x_w_min, E_w_min, x_w, 'linear', 'extrap'));
  E_e = abs(interp1(x_e_min, E_e_min, x_e, 'linear', 'extrap'));

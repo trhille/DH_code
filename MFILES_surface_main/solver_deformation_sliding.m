@@ -11,7 +11,8 @@ function [ S_P_t_guess, ...
                                    S_at_GL, N_x, Q_out_R_SS, ...
                                    Q_external_L, Q_external_R, ...
                                    E_w, E_e, fs_w, fs_e, ...
-                                   deformation_only, deformation_plus_sliding, sliding_only)
+                                   deformation_only, deformation_plus_sliding, ...
+                                   sliding_only, flux_add_w, flux_add_e )
                                
                                
 % -------------------------------------------------------------------------            
@@ -79,18 +80,20 @@ global rho_ice g
      
 % Now, calculate the flux dynamically.
 % ====================================
-     Q_w      = - sign(dS_dx_w) .* K_w .* abs(dS_dx_w);   % flux at western edges at time=time-1
-     Q_e      = - sign(dS_dx_e) .* K_e .* abs(dS_dx_e);   % flux at eastern edges at time=time-1
+     Q_w      = (- sign(dS_dx_w) .* K_w .* abs(dS_dx_w)) + flux_add_w;   % flux at western edges at time=time-1
+     Q_e      = (- sign(dS_dx_e) .* K_e .* abs(dS_dx_e)) + flux_add_e;   % flux at eastern edges at time=time-1
 
-     Q_w_t    = - sign(dS_dx_w_t) .* K_w_t .* abs(dS_dx_w_t);   % flux at western edges at time=time
-     Q_e_t    = - sign(dS_dx_e_t) .* K_e_t .* abs(dS_dx_e_t);   % flux at eastern edges at time=time
+     Q_w_t    = (- sign(dS_dx_w_t) .* K_w_t .* abs(dS_dx_w_t)) + flux_add_w;   % flux at western edges at time=time
+     Q_e_t    = (- sign(dS_dx_e_t) .* K_e_t .* abs(dS_dx_e_t)) + flux_add_e;   % flux at eastern edges at time=time
 
 
 % check that this is the same as dynamic calculation: 
   A_eff_edges_t = flow_constant_t * ((n+2)/2) * (1/((rho_ice*g)^n));
-  Q_e_dyn = calc_flux_dyn( x_e, h_e_t, dS_dx_e_t, E_e, fs_e, W_e, ...
+  Q_e_dyn_temp = calc_flux_dyn( x_e, h_e_t, dS_dx_e_t, E_e, fs_e, W_e, ...
                            A_eff_edges_t(2:end), deformation_only, deformation_plus_sliding, sliding_only );  
-  
+  Q_e_dyn = Q_e_dyn_temp + flux_add_e;
+                                         
+                       
 %   plot(S_e_t)
 %   hold on
 %   
