@@ -91,7 +91,7 @@ steady_state_only = 1;  % =1 to run.
 % ice-surface elevation and/or ice-surface velocity data
 min_search_E        = 0;   
 min_search_fs       = 0; 
-min_search_E_and_fs = 0;
+min_search_E_and_fs = 1;
 min_search_bed      = 0;  % not used!
 
 lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
@@ -226,7 +226,7 @@ LGM_transient    = 0;   % Sets prescribed S_at_GL for Darwin
 
 
 
-add_tributary_flux       = 0;   % add flux from tributaries at locations 
+add_tributary_flux       = 1;   % add flux from tributaries at locations 
                                 % along length of flowline; keep=0 for now.
 
 % initial value, or initial *guess* of temperature: must set one of these = 1!      

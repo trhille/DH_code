@@ -2,16 +2,15 @@
 
 
 % % User needs to CHANGE iterations = 1 for Darwin, or = 2 for Haterhton!
+tic
+% iterations = 1;   % Minimize for both Darwin (1) and Hatherton (2)
+ iterations = 2;    
 
-%iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
-iterations = 2    
 
-
-E_vec         = [ 0.1 0.5 1 5 10 ];
-%E_vec = [1]; % 3 10];
-fs_vec        = [ 0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
-%fs_vec = [ 1e-13 1e-12 1e-11];
-
+%E_vec         = [ 0.01 0.1 0.5 1 2 4 5 6 8 10 20 50 ];
+E_vec = [0.1 1 10]; % 3 10];
+fs_vec        = [0 logspace(-13,-11, 3)];%[0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
+% fs_vec = [ 1e-13 1e-12 1e-11];
 
 N_E           = length( E_vec );
 N_fs          = length( fs_vec );
@@ -41,8 +40,8 @@ if (iterations == 1)
         
         RMS_mismatch_matrix = NaN * ones(N_E, N_fs);
         
-        E_edges_temp        = [E_w(1) E_e];
-        fs_edges_temp       = [fs_w(1) fs_e];
+        E_edges_temp        = [1 ones(1,length(x_e))];
+        fs_edges_temp       = 1e-11.*[1 ones(1,length(x_e))];
         
 
  for xpos = 1:length_run   % loop over all x positions -- upstream
@@ -194,10 +193,10 @@ end
    
    end % loop over fs values
    
-  
+ 
   end  % loop over E values
     
-    
+   
    min_value = min(min(RMS_mismatch_matrix));
   [minRow, minCol] = find(RMS_mismatch_matrix == min_value);
    
@@ -504,6 +503,6 @@ save min_Hat_E_and_fs.mat E_P2_min E_w2_min E_e2_min ...
 
 end  % loop over iterations 1 or 2
            
-
+toc
 
 
