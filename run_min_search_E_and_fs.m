@@ -3,14 +3,14 @@
 
 % % User needs to CHANGE iterations = 1 for Darwin, or = 2 for Haterhton!
 
-%iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
-iterations = 2    
+iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
+% iterations = 2    
 
 
 E_vec         = [ 0.1 0.5 1 5 10 ];
 %E_vec = [1]; % 3 10];
-fs_vec        = [ 0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
-%fs_vec = [ 1e-13 1e-12 1e-11];
+% fs_vec        = [ 0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
+fs_vec = [ 1e-13 1e-12 1e-11];
 
 
 N_E           = length( E_vec );
@@ -176,11 +176,11 @@ RMS_mismatch_matrix = NaN * ones( N_E, N_fs );
 %   residual = abs(Darwin_velocity(xpos) - surf_vel_estimate(xpos));  % local mismatch?
  
 % % Both:
-   residual = sqrt( mean( ( (abs(Darwin_velocity) - abs(surf_vel_estimate))/std_dev ).^2 ) ) + ...
-              sqrt( mean( ( (abs(Darwin_surface_edges) - abs(S_edges(1,:)))/std_dev ).^2 ) );   
+%    residual = sqrt( mean( ( (abs(Darwin_velocity) - abs(surf_vel_estimate))/std_dev ).^2 ) ) + ...
+%               sqrt( mean( ( (abs(Darwin_surface_edges) - abs(S_edges(1,:)))/std_dev ).^2 ) );   
 
-%   residual = sqrt( mean( ( (abs(Darwin_velocity(xpos)) - abs(surf_vel_estimate(xpos)))/std_dev ).^2 ) ) + ...
-%              sqrt( mean( ( (abs(Darwin_surface_edges(xpos)) - abs(S_edges(xpos)))/std_dev ).^2 ) );   
+  residual = sqrt( mean( ( (abs(Darwin_velocity(xpos)) - abs(surf_vel_estimate(xpos)))/std_dev ).^2 ) ) + ...
+             sqrt( mean( ( (abs(Darwin_surface_edges(xpos)) - abs(S_edges(xpos)))/std_dev ).^2 ) );   
           
   
 if (isreal(S_P(1,:)) == 0)
@@ -420,11 +420,11 @@ RMS_mismatch_matrix2 = NaN * ones( N_E, N_fs );
 %  residual2 = abs(Hat_velocity(xpos2) - surf_vel_estimate2(xpos2));  % local mismatch?
  
  % % Both:
- residual2 = sqrt( mean( ( (abs(Hat_velocity) - abs(surf_vel_estimate2))/std_dev ).^2 ) ) + ...
-              sqrt( mean( ( (abs(Hat_surface_edges) - abs(S_edges2(1,:)))/std_dev ).^2 ) );   
+%  residual2 = sqrt( mean( ( (abs(Hat_velocity) - abs(surf_vel_estimate2))/std_dev ).^2 ) ) + ...
+%               sqrt( mean( ( (abs(Hat_surface_edges) - abs(S_edges2(1,:)))/std_dev ).^2 ) );   
  
-% residual2 = sqrt( mean( ( (abs(Hat_velocity(xpos2)) - abs(surf_vel_estimate2(xpos2)))/std_dev ).^2 ) ) + ...
-%              sqrt( mean( ( (abs(Hat_surface_edges(xpos2)) - abs(S_edges2(xpos2)))/std_dev ).^2 ) );   
+residual2 = sqrt( mean( ( (abs(Hat_velocity(xpos2)) - abs(surf_vel_estimate2(xpos2)))/std_dev ).^2 ) ) + ...
+             sqrt( mean( ( (abs(Hat_surface_edges(xpos2)) - abs(S_edges2(xpos2)))/std_dev ).^2 ) );   
           
   
   
