@@ -176,7 +176,7 @@ elseif (time > 1)  % this comes in if steady_state_only = 0
 DIRECTORY_surf = 'MFILES_surface_main';
 
 addpath( DIRECTORY_surf )   
-
+keyboard
 
   [ h_P2(time2,:), h_w2(time2,:), h_e2(time2,:), ...
    S_P2(time2,:), S_w2(time2,:), S_e2(time2,:), ...
@@ -200,8 +200,7 @@ addpath( DIRECTORY_surf )
                                               deformation_plus_sliding2, ...
                                               sliding_only2, ...
                                               flux_add_w2, flux_add_e2 );
-            
-                                          
+                    
 % fill matrices to save values
 % ============================
      S_P2(time2,:)                = h_P2(time2,:) + B_P2; 
@@ -273,7 +272,6 @@ average_vel_estimate_nochanges = average_vel_estimate;
 save values_nochanges.mat x_P_nochanges S_P_nochanges x_edges_nochanges average_vel_estimate_nochanges
 
 end
-
 
 
 

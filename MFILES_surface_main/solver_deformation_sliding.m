@@ -122,8 +122,7 @@ global rho_ice g
    %  rhs(1)    = rhs(1) + (2*(S_at_GL-B_P(1)) * theta * (1./W_P(1)) .* D_w_t(1));
    
      rhs(1)    = rhs(1) + (2*(S_at_GL(1)) * theta * (1./W_P(1)) .* D_w_t(1));
-    
-    
+
 % Prescribe flux at head = SS value (nothing added):
 %     flux_in   = Q_out_R_SS;  
 %     flux_in_t = Q_out_R_SS;  
@@ -135,7 +134,7 @@ global rho_ice g
                 ( (1/W_P(end)) * (1-theta) * (flux_in - Q_w(end)) )  + ...
                 (( (theta * b_dot_P(2,end)) + ...
                  ((1-theta) * b_dot_P(1,end)) ) .* dx_bc_end);
-             
+
     
 
   S_P_t_guess = S_P_t;   % guess h(t) = h(t-1); store this value.
@@ -165,6 +164,6 @@ global rho_ice g
  
                     
 
-   
+ 
    
                              

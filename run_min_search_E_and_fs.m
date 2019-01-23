@@ -3,8 +3,8 @@
 
 % % User needs to CHANGE iterations = 1 for Darwin, or = 2 for Haterhton!
 
-iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
-% iterations = 2    
+%iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
+ iterations = 2    
 
 
 E_vec         = [ 0.1 0.5 1 5 10 ];
