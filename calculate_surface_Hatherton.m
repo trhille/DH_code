@@ -176,7 +176,7 @@ elseif (time > 1)  % this comes in if steady_state_only = 0
 DIRECTORY_surf = 'MFILES_surface_main';
 
 addpath( DIRECTORY_surf )   
-keyboard
+% keyboard
 
   [ h_P2(time2,:), h_w2(time2,:), h_e2(time2,:), ...
    S_P2(time2,:), S_w2(time2,:), S_e2(time2,:), ...

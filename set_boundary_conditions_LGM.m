@@ -99,13 +99,19 @@ load min_Hat_E_and_fs.mat
  fs_w2 = abs(interp1(x_w2_min, fs_w2_min, x_w2, 'linear', 'extrap'));
  fs_e2 = abs(interp1(x_e2_min, fs_e2_min, x_e2, 'linear', 'extrap'));
 
-
+ 
 % Try this when finding values from min on edge points:
  E_P   = interp1([x_w_min(1) x_e_min], [E_w_min(1) E_e_min], x_P, 'linear', 'extrap');
  fs_P  = interp1([x_w_min(1) x_e_min], [fs_w_min(1) fs_e_min], x_P, 'linear', 'extrap');
  E_P2  = interp1([x_w2_min(1) x_e2_min], [E_w2_min(1) E_e2_min], x_P2, 'linear', 'extrap');
  fs_P2 = interp1([x_w2_min(1) x_e2_min], [fs_w2_min(1) fs_e2_min], x_P2, 'linear', 'extrap');
  
+% IS THIS NEEDED? 
+ [ E_w, E_e ] = get_edge_values_quadratic( E_P, x_P, x_w, x_e, dx_P, dx_w, dx_e );
+ [ fs_w, fs_e ] = get_edge_values_quadratic( fs_P, x_P, x_w, x_e, dx_P, dx_w, dx_e );
+ [ E_w2, E_e2 ] = get_edge_values_quadratic( E_P2, x_P2, x_w2, x_e2, dx_P2, dx_w2, dx_e2 );
+ [ fs_w2, fs_e2 ] = get_edge_values_quadratic( fs_P2, x_P2, x_w2, x_e2, dx_P2, dx_w2, dx_e2);
+ 
 
-
+ 
  

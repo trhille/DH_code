@@ -4,13 +4,13 @@
 % % User needs to CHANGE iterations = 1 for Darwin, or = 2 for Haterhton!
 
 %iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
- iterations = 2    
+iterations = 2    
 
 
-E_vec         = [ 0.1 0.5 1 5 10 ];
-%E_vec = [1]; % 3 10];
-% fs_vec        = [ 0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
-fs_vec = [ 1e-13 1e-12 1e-11];
+E_vec    = [ 0.1 0.2 0.4 0.6 0.8 1 2 3 6 8 10 ];
+% E_vec = [1]; % 3 10];
+% fs_vec = [ 0.1e-11 0.2e-11 0.3e-11 0.4e-11 0.5e-11 0.6e-11 0.7e-11 0.8e-11 0.9e-11 1e-11];
+fs_vec = [ 1e-13 1e-12 1e-11 ];
 
 
 N_E           = length( E_vec );

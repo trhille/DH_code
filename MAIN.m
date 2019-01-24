@@ -276,8 +276,6 @@ load DH_tributaries.mat
 % -------------------------------------------------------------------------
 
 
-
-
 disp(' ' )  
 disp('    Ice-surface calculation...')
 disp(' ' )
@@ -361,7 +359,7 @@ disp('  Resetting surface elevation for Hatherton based on Darwin values ... ')
 %S_in_global_Hatherton = h_w(time2, index_xpos_Hatherton_edges) + B_w(index_xpos_Hatherton_edges) - value_to_zero_bed + value_to_zero_bed2;
 S_in_global_Hatherton = h_w(time2, index_xpos_Hatherton_edges) + B_w(index_xpos_Hatherton_edges);
 S_0_in2               = S_in_global_Hatherton;
-S_at_GL2              = ones(size(t_P2)) * S_0_in2;  
+S_at_GL2              = ones(size(t_P2)) * S_0_in2;  % for stead state case
       
      
 % -------------------------------------------------------------------------
@@ -438,7 +436,7 @@ S_at_GL2(time2)       = S_0_in2;
 % -------------------------------------------------------------------------
 
     
-% Then, setup flux added at 17 km from Hatherton...
+% Then, setup flux from Hatherton...
 flux_add_P(index_xpos_Hatherton_P) = flux_edges_dyn_xt2(time, 1) / W_P2(1);
 
 % By interpolating to edges the single value is smeared out. 

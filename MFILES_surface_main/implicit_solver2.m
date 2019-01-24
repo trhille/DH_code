@@ -52,7 +52,7 @@ kill = 0;
 % Initialize values
 % =================
   flow_constant   = ((2*A_eff_edges(1,:))/(n+2)) * (rho_ice*g)^n;  
-  flow_constant_t = ((2* A_eff_edges(2,:))/(n+2)) * (rho_ice*g)^n;
+  flow_constant_t = ((2*A_eff_edges(2,:))/(n+2)) * (rho_ice*g)^n;
 %  from the shallow ice approximation  
 
 
