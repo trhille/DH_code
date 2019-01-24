@@ -91,8 +91,8 @@ steady_state_only = 0;  % =1 to run.
 % ice-surface elevation and/or ice-surface velocity data
 min_search_E        = 0;   
 min_search_fs       = 0; 
-min_search_E_and_fs = 0;
-min_search_bed      = 0;  % not used!
+min_search_E_and_fs = 0;  % USE THIS ONE!
+min_search_bed      = 0;  % not working yet.
 
 lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
                         % Likely not as accurate, especially for gradients
@@ -292,7 +292,7 @@ if ( (min_search_E == 1) || (min_search_bed == 1) || (min_search_fs == 1) || (mi
   time2 = 1; 
   
   if (min_search_E_and_fs == 1)
-    run_min_search_E_and_fs;    % run_min_search_E_2;
+    run_min_search_E_and_fs_xP;    % run_min_search_E_2; % this one solved for edge values.
   end  
   
   if (min_search_E == 1)
