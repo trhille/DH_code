@@ -86,7 +86,9 @@ if (time2 == 1)
                                          A_eff_edges_xt2(time2,1:end-1), ...
                                          A_eff_edges_xt2(time2,2:end), ...
                                          flux_add_w2, flux_add_e2, ...
-                                         deformation_only2, deformation_plus_sliding2, sliding_only2);
+                                         deformation_only2, ...
+                                         deformation_plus_sliding2, ...
+                                         sliding_only2, scaling_w2, scaling_e2);
                                      
                          
 % edge values of ice thickness
@@ -119,7 +121,7 @@ flux_edges_kin_xt2(time2,:) = flux_edges_kin_xt2(time2,:) + [flux_add_w2(1) flux
                                        
  flux_edges_dyn_xt2(1,1) = Q_0_in2; 
                  
- flux_edges_dyn_xt2(time2,:) = flux_edges_dyn_xt2(time2,:) + [flux_add_w2(1) flux_add_e2];
+ flux_edges_dyn_xt2(time2,:) = (flux_edges_dyn_xt2(time2,:) .* [scaling_w2(1) scaling_e2]) + [flux_add_w2(1) flux_add_e2];
 
  
  
@@ -199,7 +201,8 @@ addpath( DIRECTORY_surf )
                                               deformation_only2, ...
                                               deformation_plus_sliding2, ...
                                               sliding_only2, ...
-                                              flux_add_w2, flux_add_e2 );
+                                              flux_add_w2, flux_add_e2, ...
+                                              scaling_w2, scaling_e2 );
                     
 % fill matrices to save values
 % ============================

@@ -3,7 +3,9 @@ function dSurf_0_dx = dSurf_0_dx( x, x_P, x_w, x_e, dx_P, S, ...
                                   fs_w, fs_e,b_dot_w, b_dot_e, ...
                                   Q_in_0, A_T_w, A_T_e, ...
                                   flux_add_w, flux_add_e, ...
-                                  deformation_only, deformation_plus_sliding, sliding_only)
+                                  deformation_only, ...
+                                  deformation_plus_sliding, sliding_only, ...
+                                  scaling_w, scaling_e)
                         
 
 % -------------------------------------------------------------------------
@@ -41,6 +43,7 @@ global rho_ice  g  n
      Width  = interp1( [ x_w(1)  x_e ], [ W_w(1)  W_e ], x );
      E_x    = interp1( [ x_w(1)  x_e ], [ E_w(1) E_e], x );
      fs_x   = interp1( [ x_w(1)  x_e ], [ fs_w(1) fs_e], x );
+     scaling_x = interp1( [ x_w(1) x_e ], [ scaling_w(1) scaling_e], x);
      
      flux_add_x = interp1( [x_w(1) x_e ], [flux_add_w(1) flux_add_e], x);
      
@@ -75,9 +78,12 @@ if (deformation_only == 1)
  %  dSurf_0_dx = ( - (Q_x) ./ ...
  %               ( Width.*(rho_ice*g)^n .* (deformation_factor .* (S-Bed).^(n+2) ) ) ).^(1/n);                  
 
-   dSurf_0_dx = - sign(Q_x) .* ( abs(Q_x) ./ ...
-                 ( Width.*(rho_ice*g)^n .* (deformation_factor .* (S-Bed).^(n+2) ) ) ).^(1/n);                  
+%   dSurf_0_dx = - sign(Q_x) .* ( abs(Q_x) ./ ...
+%                 ( Width.*(rho_ice*g)^n .* (deformation_factor .* (S-Bed).^(n+2) ) ) ).^(1/n);                  
 
+
+  dSurf_0_dx = - sign(Q_x) .* ( abs(Q_x) ./ ...
+                 ( (Width.*(S-Bed).*scaling_x).*(rho_ice*g)^n .* (deformation_factor .* (S-Bed).^(n+1) ) ) ).^(1/n);                  
             
 
 elseif (deformation_plus_sliding == 1)
@@ -90,20 +96,27 @@ elseif (deformation_plus_sliding == 1)
 %                 ( Width.*(rho_ice*g)^n .* (deformation_factor .* (S-Bed).^(n+2) ...
 %                                            + fs_x.*(S-Bed).^n ) ) ).^(1/n); 
                                        
+%  dSurf_0_dx = - sign(Q_x) .* ( abs(Q_x) ./ ...
+%                ( Width.*(rho_ice*g)^n .* (deformation_factor .* (S-Bed).^(n+2) ...
+%                                           + fs_x.*(S-Bed).^n ) ) ).^(1/n);           
+
   dSurf_0_dx = - sign(Q_x) .* ( abs(Q_x) ./ ...
-                ( Width.*(rho_ice*g)^n .* (deformation_factor .* (S-Bed).^(n+2) ...
-                                           + fs_x.*(S-Bed).^n ) ) ).^(1/n);           
+                ( (Width.*(S-Bed).*scaling_x).*(rho_ice*g)^n .* (deformation_factor .* (S-Bed).^(n+1) ...
+                                           + fs_x.*(S-Bed).^(n-1) ) ) ).^(1/n);                                         
                                        
     
 elseif (sliding_only == 1)
    
-  dSurf_0_dx = - sign(Q_x) .* ( abs(Q_x) ./ ...
-               ( Width.*(rho_ice*g)^n .* (fs_x.*(S-Bed).^n ) ) ).^(1/n); 
+%  dSurf_0_dx = - sign(Q_x) .* ( abs(Q_x) ./ ...
+%               ( Width.*(rho_ice*g)^n .* (fs_x.*(S-Bed).^n ) ) ).^(1/n); 
             
 %   dSurf_0_dx = ( -(Q_x) ./ ...
 %                 ( Width.*(rho_ice*g)^n .* (fs_x.*(S-Bed).^n ) ) ).^(1/n); 
         
-            
+  dSurf_0_dx = - sign(Q_x) .* ( abs(Q_x) ./ ...
+               ( (Width.*(S-Bed).*scaling_x).*(rho_ice*g)^n .* (fs_x.*(S-Bed).^(n-1) ) ) ).^(1/n); 
+         
+
 elseif (deformation_sliding_lateraldrag == 1)
     
     

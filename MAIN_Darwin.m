@@ -67,8 +67,10 @@ global thisrun %added by TH 12/5 to experiment with ensemble runs
 % Enhancement factor value -- sometimes called "slip" elsewhere; sorry for that slip!
 % ========================
       [ E_P, E_w, E_e, ... 
-        fs_P, fs_w, fs_e ] = load_factors( x_P, x_w, x_e, dx_P, dx_w, dx_e );
-
+        fs_P, fs_w, fs_e, ...
+        scaling_P, scaling_w, scaling_e ] = ...
+                           load_factors( x_P, x_w, x_e, dx_P, dx_w, dx_e );
+    
     
   
 % Load accumulation history b_dot(x,t)  

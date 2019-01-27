@@ -62,7 +62,9 @@ global S_in_global_Hatherton
 % Enhancement factor value -- sometimes called "slip" elsewhere; sorry for that slip!
 % ========================
       [ E_P2, E_w2, E_e2, ... 
-        fs_P2, fs_w2, fs_e2 ] = load_factors2( x_P2, x_w2, x_e2, dx_P2, dx_w2, dx_e2 );
+        fs_P2, fs_w2, fs_e2, ...
+        scaling_P2, scaling_w2, scaling_e2 ] = ...
+                    load_factors2( x_P2, x_w2, x_e2, dx_P2, dx_w2, dx_e2 );
 
     
   

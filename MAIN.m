@@ -9,9 +9,6 @@
 % Transient glacier surface evolution model
 % -----------------------------------------
 
-% Last updated April 2017
-% Michelle Koutnik
-
 % Using the finite (control) volume method (FVM)
 % Shallow Ice Approximation with optional parameterizations for:
 %       - sliding (simple partitioning; Cuffey and Paterson pg. XX)

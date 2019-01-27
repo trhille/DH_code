@@ -1,5 +1,6 @@
 function [ E_P, E_w, E_e, ...
-           fs_P, fs_w, fs_e ] = load_factors( x_P, x_w, x_e, dx_P, dx_w, dx_e )
+           fs_P, fs_w, fs_e, ...
+           scaling_P, scaling_w, scaling_e] = load_factors( x_P, x_w, x_e, dx_P, dx_w, dx_e )
 
 
 %--------------------------------------------------------------
@@ -63,5 +64,13 @@ global s_per_year
 
 
   
+  
+  % Scaling factor based on geometry, used to scale ice flux
+  % ---------------------------------------------------------
+  
+  scaling_P = 0.7 * ones(size(x_P));
+  
+  [ scaling_w, scaling_e ] = get_edge_values_quadratic (scaling_P, x_P, x_w, x_e, dx_P, dx_w, dx_e );
+
   
                            
