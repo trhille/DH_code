@@ -1,4 +1,4 @@
-function [width, SMB_mean, distance_along_centerline] = glacier_widths_and_SMB(RACMO_paths, flowline_path, buffer_path, nodes)
+function [width, SMB_mean, cross_sectional_area, distance_along_centerline] = glacier_widths_and_SMB(RACMO_paths, flowline_path, buffer_path, nodes)
 %glacier_widths_and_SMB automatically measures widths of a polygon (glacier outline
 %shapefile) perpendicular to a flowline (also a shapefile), and calculates
 %the width-averaged surface mass balance at each node
@@ -10,6 +10,9 @@ function [width, SMB_mean, distance_along_centerline] = glacier_widths_and_SMB(R
 %Read into matlab with shaperead
 %buffer = the polygon of the glacier outline, made in qgis. use shaperead
 %nodes = number of evenly-spaced points at which to measure width.
+
+% Import ice thickness. This is the one to use
+[Z,R] = arcgridread('/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Modeling/Koutnik model/DH_code/DH_DATA/Gridded Datasets/icethic.asc');
 %% get shapefiles into usable format. Buffer is fine the way it is.
 addpath '/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Data/RACMO/RACMO2.3';
 addpath '/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Data/RACMO/RACMO2.1_ADL055';
@@ -71,10 +74,19 @@ end
 
 Lnormal = [Lnormal; Lnormal_end];
 Rnormal = [Rnormal; Rnormal_end];
+%% Create the grid for ice thickness
+Z_vecx = R(3,1) + R(2,1).*(1:size(Z,1));
+Z_vecy = R(3,2) + R(1,2).*(1:size(Z,2));
 
+[Z_gridx, Z_gridy] = meshgrid(Z_vecx, Z_vecy);
+
+figure(1)
+% pcolor(Z_gridx, Z_gridy, Z); hold on
 %% Now find the points where these normal vectors intersect the buffer
 count = 1;
-SMB_mean = zeros(size(flowline,1), 1);
+SMB_mean = zeros(size(flowline,1), 1); %pre-allocating size for speed
+cross_sectional_area = zeros(size(flowline,1), 1);
+interp_length = 100; % meters
 for jj = 1:size(flowline,1)
   
     normalx = [Rnormal(jj,1), Lnormal(jj,1)];
@@ -91,22 +103,32 @@ for jj = 1:size(flowline,1)
    
     if isempty(xx) == 0 && isempty(yy) == 0 
         width(count) = pdist2([xx(1) yy(1)],[xx(2) yy(2)]);
+        
    
     
     %temporarily fill in between these two points to calculate
     %width-averaged SMB
 
-    xx_interp = linspace(xx(1), xx(2), ceil(width(count)/1000));
+    xx_interp = linspace(xx(1), xx(2), ceil(width(count)/interp_length));
     yy_interp = interp1(xx, yy, xx_interp);
     
-    SMB_profile = griddata(SMB_x, SMB_y, SMB, xx_interp, yy_interp, 'linear')./917; %interpolate and convert to m ice equivalent (specific gravity of ice =0.917 and convert mm to m)
+    distance_interp = (gradient(xx_interp).^2 + gradient(yy_interp).^2).^0.5;
+    
+    SMB_profile = griddata(SMB_x, SMB_y, SMB, xx_interp, yy_interp, 'cubic')./917; %interpolate and convert to m ice equivalent (specific gravity of ice =0.917 and convert mm to m)
     SMB_mean(jj) = sum(SMB_profile)./length(SMB_profile);
+    
+    %now use that same cross profile to calculate cross-sectional area
+    %along the line
+    cross_section = griddata(Z_gridx, Z_gridy, Z, xx_interp, yy_interp, 'cubic');
+    cross_sectional_area(jj) = sum(cross_section.*distance_interp);
   
     
     else
         width(count) = NaN;
     end
     count = count+1;
+    
+  
 end
 
 plot(buffer.X, buffer.Y)

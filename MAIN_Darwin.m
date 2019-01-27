@@ -207,14 +207,14 @@ end   % if statement on temperature options
   if (LGM_transient == 1)
       
     load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
-%         Smooth9ka.HeightAboveModern(1:4) = 500; %account for lower LGM surface elevation than previously used
-%     S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0],...
-%     [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern'...
-%     Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
+        Smooth9ka.HeightAboveModern(1:4) = 1000; %account for lower LGM surface elevation than previously used
+    S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0],...
+    [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern'...
+    Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
 
 
 %test if it holds steady state
- S_at_GL = (S_0_in).*ones(length(t_P));
+%  S_at_GL = (S_0_in).*ones(length(t_P));
 
 % % LGM ice 500 m thicker than today
 %   S_at_GL = S_0_in + interp1([t_P(1) -Stepwise9ka.Time' 0],...
