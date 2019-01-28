@@ -73,7 +73,7 @@ global LGM_transient
 % STEP 1: Run minimization scheme to find best E and fs that give match to
 % surface elevation and surface velocity at Darwin and at Hatherton
 
-steady_state_only = 1;  % =1 to run.
+steady_state_only = 0;  % =1 to run.
 
 % Need to set one of the min_search algorithms = 1 at a time.
 % THEN, need to set corresponding flags for deformation and/or sliding.
@@ -88,7 +88,7 @@ steady_state_only = 1;  % =1 to run.
 % ice-surface elevation and/or ice-surface velocity data
 min_search_E        = 0;   
 min_search_fs       = 0; 
-min_search_E_and_fs = 1;  % USE THIS ONE!
+min_search_E_and_fs = 0;  % USE THIS ONE!
 min_search_bed      = 0;  % not working yet.
 
 lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
@@ -204,7 +204,7 @@ LGM_steady_state = 0;   % Run for steady state to best match LGM limits on Hathe
 % MAIN_Darwin at the bottom as "S_at_GL" -- pick between different smooth
 % and step histories to compare to data
                         
-LGM_transient    = 0;   % Sets prescribed S_at_GL for Darwin
+LGM_transient    = 1;   % Sets prescribed S_at_GL for Darwin
 
 
 
@@ -570,6 +570,88 @@ title('HATHERTON')
 
 
 
+end
+
+%% Plot up transient results and some geochronological data
+if LGM_transient == 1
+    
+load 'DH_DATA/Geochronology data/cosmo_data.mat'
+
+LW_x_P_ind = 13;
+MV_x_P_ind = 31;
+DAN_x_P_ind = 46;
+
+    figure(1); clf
+    subplot(2,1,1)
+    plot(x_P/1000, B_P, x_P./1000, S_P(1:5:end,:)); hold on
+    plot(x_P/1000, smooth(S_modern), 'linewidth', 2)
+    title 'Darwin Glacier'
+    set(gca, 'Fontsize', 14)
+    ylabel ('Elevation (m asl)')
+    xlabel ('Distance from grounding-line (km)')
+    xlim([x_P(1) x_P(end)]./1000 + [-5 5])
+    grid on; box on
+    
+    subplot(2,1,2)
+    plot((x_P2 - x_P2(1))./1000, B_P2, (x_P2 - x_P2(1))./1000, S_P2(1:5:end,:)); hold on
+    plot((x_P2 - x_P2(1))./1000, smooth(S_modern2), 'linewidth', 2)
+    title 'Hatherton Glacier'
+    set(gca, 'Fontsize', 14)
+    ylabel ('Elevation (m asl)')
+    xlabel ('Distance from Darwin (km)')
+    grid on; box on
+    
+    plot((x_P2([LW_x_P_ind, MV_x_P_ind, DAN_x_P_ind]) - x_P2(1))./1000, [1300 1350 1500], 'ko')
+    
+    figure(2); clf
+    subplot(3,1,1); hold on
+    plot(-t_P2/1000, S_P2(:,(DAN_x_P_ind-2):(DAN_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
+    plot(-t_P2/1000, S_P2(:,DAN_x_P_ind), 'k',  'linewidth', 2)
+    
+    plot(data.parsed_output.DAN.erratics.t10St/1000,...
+        data.parsed_output.DAN.erratics.elev, 'ko',...
+        'markerfacecolor', [0.8 0.8 0.8])
+    plot(data.parsed_output.UM.erratics.t10St/1000,...
+        data.parsed_output.UM.erratics.elev, 'ko',...
+        'markerfacecolor', [0.8 0.8 0.8])
+    
+    xlim([0 20])
+    title 'Dubris, Bibra, Danum'
+    xlabel ('Time (kyr BP)')
+    ylabel ('Elevation (m)')
+    set(gca, 'Fontsize', 12)
+    grid on; box on
+    
+    subplot(3,1,2); hold on
+    plot(-t_P2/1000, S_P2(:,(MV_x_P_ind-2):(MV_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
+    plot(-t_P2/1000, S_P2(:,MV_x_P_ind), 'k', 'linewidth', 2)
+    
+    plot(data.parsed_output.MV_walls.erratics.t10St/1000,...
+        data.parsed_output.MV_walls.erratics.elev, 'ko',...
+        'markerfacecolor', [0.8 0.8 0.8])
+    xlim([0 20])
+    
+    title 'Magnis Valley'
+    xlabel ('Time (kyr BP)')
+    ylabel ('Elevation (m)')
+    set(gca, 'Fontsize', 12)
+    grid on; box on
+    
+    subplot(3,1,3); hold on
+    plot(-t_P2/1000, S_P2(:,(LW_x_P_ind-2):(LW_x_P_ind+2)), 'linewidth', 2,'color', [0.8 0.8 0.8])
+    plot(-t_P2/1000, S_P2(:,LW_x_P_ind), 'k', 'linewidth', 2)
+    
+        
+    plot(data.parsed_output.LW.erratics.t10St/1000,...
+        data.parsed_output.LW.erratics.elev, 'ko',...
+        'markerfacecolor', [0.8 0.8 0.8])
+    
+    xlim([0 20])
+    title 'Lake Wellman'
+    xlabel ('Time (kyr BP)')
+    ylabel ('Elevation (m)')
+    set(gca, 'Fontsize', 12)
+    grid on; box on
 end
 
  
