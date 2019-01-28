@@ -1,6 +1,6 @@
 function [ E_P, E_w, E_e, ...
            fs_P, fs_w, fs_e, ...
-           scaling_P, scaling_w, scaling_e ] = load_factors( x_P, x_w, x_e, dx_P, dx_w, dx_e )
+           scaling_P, scaling_w, scaling_e ] = load_factors( x_P, x_w, x_e, dx_P, dx_w, dx_e, S_modern, B_P, W_P )
 
 
 %--------------------------------------------------------------
@@ -64,7 +64,17 @@ global s_per_year
   % Scaling factor based on geometry, used to scale ice flux
   % ---------------------------------------------------------
   
-  scaling_P = 0.7 * ones(size(x_P));
+  load DH_DATA/DH_cross_sect_area.mat Hat_cross_sect_area...
+      Hat_distance_along_centerline
+  
+  load DH_accum_width_velocity.mat Hat_width_x Hat_width_values
+  
+  W_P_true = interp1(Hat_width_x, Hat_width_values, x_P, 'linear', 'extrap');
+  
+  cross_sect_area = interp1(Hat_distance_along_centerline + x_P(1),...
+      Hat_cross_sect_area, x_P, 'linear', 'extrap');
+  
+  scaling_P = cross_sect_area./((S_modern - B_P).*W_P_true);
   
   [ scaling_w, scaling_e ] = get_edge_values_quadratic (scaling_P, x_P, x_w, x_e, dx_P, dx_w, dx_e );
 

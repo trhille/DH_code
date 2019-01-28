@@ -69,7 +69,7 @@ global thisrun %added by TH 12/5 to experiment with ensemble runs
       [ E_P, E_w, E_e, ... 
         fs_P, fs_w, fs_e, ...
         scaling_P, scaling_w, scaling_e ] = ...
-                           load_factors( x_P, x_w, x_e, dx_P, dx_w, dx_e );
+                           load_factors( x_P, x_w, x_e, dx_P, dx_w, dx_e, S_modern, B_P, W_P );
     
     
   
@@ -207,7 +207,7 @@ end   % if statement on temperature options
   if (LGM_transient == 1)
       
     load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
-        Smooth9ka.HeightAboveModern(1:4) = 1000; %account for lower LGM surface elevation than previously used
+        Smooth9ka.HeightAboveModern(1:4) = 500; %account for lower LGM surface elevation than previously used
     S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0],...
     [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern'...
     Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');

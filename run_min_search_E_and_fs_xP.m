@@ -17,8 +17,8 @@ N_fs          = length( fs_vec );
 % Might be working to run through both together but don't have file saving
 % setup and don't have it double checked. 
 
-% for iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
- for iterations = 2    
+for iterations = 1   % Minimize for both Darwin (1) and Hatherton (2)
+%  for iterations = 2    
     
     if (iterations == 1)
         disp('Running for Darwin...')
@@ -79,7 +79,9 @@ RMS_mismatch_matrix = NaN * ones( N_E, N_fs );
                                          A_eff_edges_xt(time,1:end-1), ...
                                          A_eff_edges_xt(time,2:end), ...
                                          flux_add_w, flux_add_e, ...
-                                         deformation_only, deformation_plus_sliding, sliding_only);
+                                         deformation_only, ...
+                                         deformation_plus_sliding,...
+                                         sliding_only, scaling_w, scaling_e);
                                                          
 % edge values of ice thickness
 % ============================
@@ -114,7 +116,8 @@ RMS_mismatch_matrix = NaN * ones( N_E, N_fs );
  
  % Residual
  % ========
-    std_dev = 1; 
+    std_dev_surface = 10 .* ones(1,length(Darwin_surface)); 
+    std_dev_vel = 4.* ones(1, length(Darwin_velocity));
 
 % %  % Surface profile:
 %   residual = sqrt( mean( ( (abs(Darwin_surface) - abs(S_P(1,:)))/std_dev ).^2 ) );           
@@ -127,8 +130,8 @@ RMS_mismatch_matrix = NaN * ones( N_E, N_fs );
  % % Both:
  %  residual = sqrt( mean( ( (abs(Darwin_velocity) - abs(surf_vel_estimate))/std_dev ).^2 ) ) + ...
  %             sqrt( mean( ( (abs(Darwin_surface) - abs(S_P(1,:)))/std_dev ).^2 ) );    
-   residual = sqrt( mean( ( (abs(Darwin_velocity(xpos)) - abs(surf_vel_estimate(xpos)))/std_dev ).^2 ) ) + ...
-              sqrt( mean( ( (abs(Darwin_surface(xpos)) - abs(S_P(1,xpos)))/std_dev ).^2 ) );   
+   residual = sqrt( mean( ( (abs(Darwin_velocity(xpos)) - abs(surf_vel_estimate(xpos)))/std_dev_vel(xpos) ).^2 ) ) + ...
+              sqrt( mean( ( (abs(Darwin_surface(xpos)) - abs(S_P(1,xpos)))/std_dev_surface(xpos) ).^2 ) );   
           
   
 if (isreal(S_P(1,:)) == 0)
@@ -380,8 +383,8 @@ RMS_mismatch_matrix2 = NaN * ones( N_E, N_fs );
  
  % Residual
  % ========
-    std_dev = 1; 
-
+    std_dev_surface = 10 .* ones(1,length(Hat_surface)); 
+    std_dev_vel = 4.* ones(1, length(Hat_velocity));
  % % Surface profile:
  %  residual2 = sqrt( mean( ( (abs(Hat_surface) - abs(S_P2(1,:)))/std_dev ).^2 ) );           
 
@@ -392,8 +395,8 @@ RMS_mismatch_matrix2 = NaN * ones( N_E, N_fs );
  % % Both:
  %   residual2 = sqrt( mean( ( (abs(Hat_velocity) - abs(surf_vel_estimate2))/std_dev ).^2 ) ) + ...
  %            sqrt( mean( ( (abs(Hat_surface) - abs(S_P2(1,:)))/std_dev ).^2 ) );    
-   residual2 = sqrt( mean( ( (abs(Hat_velocity(xpos2)) - abs(surf_vel_estimate2(xpos2)))/std_dev ).^2 ) ) + ...
-              sqrt( mean( ( (abs(Hat_surface(xpos2)) - abs(S_P2(1,xpos2)))/std_dev ).^2 ) );   
+   residual2 = sqrt( mean( ( (abs(Hat_velocity(xpos2)) - abs(surf_vel_estimate2(xpos2)))/std_dev_vel(xpos) ).^2 ) ) + ...
+              sqrt( mean( ( (abs(Hat_surface(xpos2)) - abs(S_P2(1,xpos2)))/std_dev_surface(xpos) ).^2 ) );   
           
   
   

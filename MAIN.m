@@ -73,7 +73,7 @@ global LGM_transient
 % STEP 1: Run minimization scheme to find best E and fs that give match to
 % surface elevation and surface velocity at Darwin and at Hatherton
 
-steady_state_only = 0;  % =1 to run.
+steady_state_only = 1;  % =1 to run.
 
 % Need to set one of the min_search algorithms = 1 at a time.
 % THEN, need to set corresponding flags for deformation and/or sliding.
@@ -88,7 +88,7 @@ steady_state_only = 0;  % =1 to run.
 % ice-surface elevation and/or ice-surface velocity data
 min_search_E        = 0;   
 min_search_fs       = 0; 
-min_search_E_and_fs = 0;  % USE THIS ONE!
+min_search_E_and_fs = 1;  % USE THIS ONE!
 min_search_bed      = 0;  % not working yet.
 
 lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
@@ -204,7 +204,7 @@ LGM_steady_state = 0;   % Run for steady state to best match LGM limits on Hathe
 % MAIN_Darwin at the bottom as "S_at_GL" -- pick between different smooth
 % and step histories to compare to data
                         
-LGM_transient    = 1;   % Sets prescribed S_at_GL for Darwin
+LGM_transient    = 0;   % Sets prescribed S_at_GL for Darwin
 
 
 
