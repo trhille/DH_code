@@ -16,7 +16,7 @@ addpath(DIRECTORY_data)
 
 bdot1 = 0;
 bdot2 = 0;
-bdot3 = 0;
+bdot3 = 1;
 bdot4 = 0;
 bdot5 = 1;
 bdot6 = 0;
@@ -118,8 +118,17 @@ b_dot_LGM = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation
     for ii = 1:N_t_nodes
         b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
     end
+    
+    
+    elseif bdot3 == 1 && bdot5 ==1
+        weight = [linspace(0,1, ceil(N_t_nodes ./3)), ones(1, ceil(N_t_nodes ./3)), linspace(1,0, ceil(N_t_nodes ./3))];
+        b_dot_LGM = interp1(Darwin_accumulation_centerline_distance, ...
+            Darwin_accumulation_R, x_nodes);
+        b_dot_modern = interp1(1e4:1e3:151e3, Darwin_SMB, x_nodes);
 
-
+        for ii = 1:N_t_nodes
+            b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
+        end
 
 end
 

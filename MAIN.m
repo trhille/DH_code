@@ -580,7 +580,8 @@ load 'DH_DATA/Geochronology data/cosmo_data.mat'
 LW_x_P_ind = 13;
 MV_x_P_ind = 31;
 DAN_x_P_ind = 46;
-
+    
+    % Show glacier profiles
     figure(1); clf
     subplot(2,1,1)
     plot(x_P/1000, B_P, x_P./1000, S_P(1:5:end,:)); hold on
@@ -603,6 +604,7 @@ DAN_x_P_ind = 46;
     
     plot((x_P2([LW_x_P_ind, MV_x_P_ind, DAN_x_P_ind]) - x_P2(1))./1000, [1300 1350 1500], 'ko')
     
+    % Compare to data
     figure(2); clf
     subplot(3,1,1); hold on
     plot(-t_P2/1000, S_P2(:,(DAN_x_P_ind-2):(DAN_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
@@ -652,6 +654,27 @@ DAN_x_P_ind = 46;
     ylabel ('Elevation (m)')
     set(gca, 'Fontsize', 12)
     grid on; box on
+    
+    % Plot up SMB
+    figure(3); clf
+    subplot(2,1,1); hold on; grid on; box on
+    SMB_t_Darwin = plot(x_P/1000, b_dot_P(1:5:end,:), 'color', [0.8 0.8 0.8]);
+    SMB_LGM_Darwin = plot(x_P/1000, b_dot_P(ceil(end/2),:), 'k--', 'linewidth', 2);
+    SMB_modern_Darwin = plot(x_P/1000, b_dot_P(end,:), 'k', 'linewidth', 2); 
+    legend([SMB_LGM_Darwin, SMB_modern_Darwin], {'LGM', 'Modern'})
+    xlabel ('Distance (km)')
+    ylabel ('Surface Mass Balance (m/yr)')
+    title ('Darwin')
+    set(gca, 'Fontsize', 14)
+    
+    subplot(2,1,2); hold on; grid on; box on
+    SMB_t_Hat = plot(x_P2/1000, b_dot_P2(1:5:end,:), 'color', [0.8 0.8 0.8]);
+    SMB_LGM_Hat = plot(x_P2/1000, b_dot_P2(ceil(end/2),:), 'k--', 'linewidth', 2);
+    SMB_modern_Hat = plot(x_P2/1000, b_dot_P2(end,:), 'k', 'linewidth', 2); 
+    xlabel ('Distance (km)')
+    title ('Hatherton')
+    set(gca, 'Fontsize', 14)
+    
 end
 
  
