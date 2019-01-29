@@ -29,15 +29,22 @@ if iscell(RACMO_paths)  %if you have three different .nc files with precip, subl
     load(RACMO_paths{1});
     load(RACMO_paths{2});
     load(RACMO_paths{3});
+    
+    end
+    
     SMB = precip.precip + subl.subl - runoff.runoff; 
     [SMB_x, SMB_y] = ll2ps(precip.lat, precip.lon);
-    
 elseif ~iscell(RACMO_paths) %if you have just one .nc file with just total yearly SMB
     
+    if strfind(RACMO_paths, '.nc')
     RACMO_SMB = RACMO_nc2mat(RACMO_paths);
-    SMB = mean(RACMO_SMB.smb, 4); %RACMO_nc2mat loads the smb as a 4-D array
-    [SMB_x, SMB_y] = ll2ps(RACMO_SMB.lat, RACMO_SMB.lon);
-   
+
+    elseif strfind(RACMO_paths, '.mat')
+    load(RACMO_paths)
+    end
+    
+   SMB = mean(RACMO_SMB.smb, 4); %RACMO_nc2mat loads the smb as a 4-D array
+   [SMB_x, SMB_y] = ll2ps(RACMO_SMB.lat, RACMO_SMB.lon);
 end
 
 buffer = shaperead(buffer_path);

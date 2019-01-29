@@ -16,10 +16,10 @@ addpath(DIRECTORY_data)
 
 bdot1 = 0;
 bdot2 = 0;
-bdot3 = 1;
+bdot3 = 0;
 bdot4 = 0;
 bdot5 = 1;
-bdot6 = 0;
+bdot6 = 1;
 
 disp (' ')
 disp ('Check bdot prescribed in load_b_dot.m')
@@ -37,27 +37,11 @@ disp(' ')
 
 % From QGIS -- Accumulation_A vs. Accumulation_R
 load DH_accum_width_velocity.mat
-load Darwin_RACMO2_1.mat
 load DH_surf_bed.mat
 
-
-%% 01/03/19 TH trying to minimize lapse rate parameters for bdot at LGM
-if bdot6 == 1
-     
-    
-    Darwin_bdot_LGM_lapse = precip_at_sl_LGM + lapse_LGM.*(Darwin_modern_surface+...
-        linspace(500,100, length(Darwin_modern_surface))');
-    
-    b_dot_use    = interp1(Darwin_centerline_distance, Darwin_bdot_LGM_lapse, x_nodes);
-    
-  for ii = 1:N_t_nodes
-    b_dot_nodes(ii,:) = b_dot_use;
-  end
-    
-end
 %%
 
-if bdot1 + bdot2 + bdot3 + bdot4 + bdot5 == 1
+if bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6 == 1
 
 if (bdot1 == 1)
 % % ------------------------------
@@ -79,9 +63,9 @@ elseif (bdot2 == 1)
 
  elseif (bdot3 == 1)
 % ------------------------------
-% OPTION 3: RACMO estimate LGM
+% OPTION 3: RACMO estimate from Van de Berg et al. (2006)
 % ------------------------------
- b_dot_use = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_R*0.6, x_nodes);  % NOT NEGATIVE here...
+ b_dot_use = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_R, x_nodes);  % NOT NEGATIVE here...
 
 
  elseif (bdot4 == 1)
@@ -94,41 +78,61 @@ elseif (bdot5 == 1)
 % ------------------------------
 % OPTION 5: Use RACMO2.1 5.5 km product
 % ------------------------------
-
-  b_dot_use = interp1(1e4:1e3:151e3, Darwin_SMB, x_nodes);
+  load Darwin_RACMO2_1.mat
   
+    b_dot_use = interp1(Darwin_distance_along_centerline + x_nodes(1), Darwin_SMB,...
+      x_nodes, 'linear', 'extrap');
+
+elseif (bdot6 == 1)
+% ------------------------------
+% OPTION 6: Use RACMO2.3 27 km product
+% ------------------------------
+  load Darwin_RACMO2_3.mat
+  
+    b_dot_use = interp1(Darwin_distance_along_centerline + x_nodes(1), Darwin_SMB,...
+      x_nodes, 'linear', 'extrap');
+
 end
 
   for ii = 1:N_t_nodes
     b_dot_nodes(ii,:) = b_dot_use;
   end
 
-elseif bdot1 + bdot2 + bdot3 + bdot4 + bdot5 > 1
+elseif bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6> 1
 
 if bdot1 == 1 && bdot2 == 1
     weight = linspace(1,0, N_t_nodes);
     
     
-precip_at_sl = -0.35;
-lapse = 0.35/1500;
-Darwin_bdot_modern_lapse = precip_at_sl + lapse.*Darwin_modern_surface;
-b_dot_modern = interp1(Darwin_centerline_distance, Darwin_bdot_modern_lapse, x_nodes);
-b_dot_LGM = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_A*0.6, x_nodes);
+    precip_at_sl = -0.35;
+    lapse = 0.35/1500;
+    Darwin_bdot_modern_lapse = precip_at_sl + lapse.*Darwin_modern_surface;
+    b_dot_modern = interp1(Darwin_centerline_distance, Darwin_bdot_modern_lapse, x_nodes);
+    b_dot_LGM = interp1(Darwin_accumulation_centerline_distance, Darwin_accumulation_A*0.6, x_nodes);
 
     for ii = 1:N_t_nodes
         b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
     end
     
     
-    elseif bdot3 == 1 && bdot5 ==1
-        weight = [linspace(0,1, ceil(N_t_nodes ./3)), ones(1, ceil(N_t_nodes ./3)), linspace(1,0, ceil(N_t_nodes ./3))];
-        b_dot_LGM = interp1(Darwin_accumulation_centerline_distance, ...
-            Darwin_accumulation_R, x_nodes);
-        b_dot_modern = interp1(1e4:1e3:151e3, Darwin_SMB, x_nodes);
+elseif bdot5 == 1 && bdot6 ==1
+    load Darwin_RACMO2_3.mat
+    Darwin_distance_along_centerline2_3 = Darwin_distance_along_centerline;
+    Darwin_SMB2_3 = Darwin_SMB;
+    b_dot_LGM = interp1(Darwin_distance_along_centerline2_3 + x_nodes(1), Darwin_SMB2_3,...
+        x_nodes, 'linear', 'extrap');   
+    
+    load Darwin_RACMO2_1.mat
+    Darwin_distance_along_centerline2_1 = Darwin_distance_along_centerline;
+    Darwin_SMB2_1 = Darwin_SMB; clear Darwin_distance_along_centerline Darwin_SMB
+    b_dot_modern = interp1(Darwin_distance_along_centerline2_1 + x_nodes(1), Darwin_SMB2_1,...
+        x_nodes, 'linear', 'extrap');
 
-        for ii = 1:N_t_nodes
-            b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
-        end
+    weight = [linspace(0,1, ceil(N_t_nodes ./3)), ones(1, ceil(N_t_nodes ./3)), linspace(1,0, ceil(N_t_nodes ./3))];
+    
+    for ii = 1:N_t_nodes
+        b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
+    end
 
 end
 
