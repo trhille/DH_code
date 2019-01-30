@@ -119,7 +119,7 @@ elseif bdot5 == 1 && bdot6 ==1
     load Darwin_RACMO2_3.mat
     Darwin_distance_along_centerline2_3 = Darwin_distance_along_centerline;
     Darwin_SMB2_3 = Darwin_SMB;
-    b_dot_LGM = interp1(Darwin_distance_along_centerline2_3 + x_nodes(1), Darwin_SMB2_3,...
+    b_dot_LGM = 0.6.*interp1(Darwin_distance_along_centerline2_3 + x_nodes(1), Darwin_SMB2_3,...
         x_nodes, 'linear', 'extrap');   
     
     load Darwin_RACMO2_1.mat
@@ -128,7 +128,7 @@ elseif bdot5 == 1 && bdot6 ==1
     b_dot_modern = interp1(Darwin_distance_along_centerline2_1 + x_nodes(1), Darwin_SMB2_1,...
         x_nodes, 'linear', 'extrap');
 
-    weight = [linspace(0,1, ceil(N_t_nodes ./3)), ones(1, ceil(N_t_nodes ./3)), linspace(1,0, ceil(N_t_nodes ./3))];
+    weight = [linspace(0,1, ceil(N_t_nodes ./4)), ones(1, ceil(N_t_nodes ./2)), linspace(1,0, ceil(N_t_nodes ./4))];
     
     for ii = 1:N_t_nodes
         b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));

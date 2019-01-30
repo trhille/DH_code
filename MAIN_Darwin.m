@@ -206,22 +206,26 @@ end   % if statement on temperature options
   
   if (LGM_transient == 1)
       
-    load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
-        Smooth9ka.HeightAboveModern(1:4) = 500; %account for lower LGM surface elevation than previously used
-    S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0],...
-    [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern'...
-    Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
-
-
-%test if it holds steady state
+%     load DH_DATA/Boundary_conditions/Diamond_Hill/DH_deglaciation_scenarios.mat
+    
+%% Smooth thinning of 500 m beginning at 9 kyr BP, constrained by data.
+%     Smooth9ka.HeightAboveModern(1:4) = 500; %account for lower LGM surface elevation than previously used
+%     S_at_GL = S_0_in + interp1([t_P(1) -Smooth9ka.Time' 0],...
+%     [Smooth9ka.HeightAboveModern(1) Smooth9ka.HeightAboveModern'...
+%     Smooth9ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
+%% test if it holds steady state
 %  S_at_GL = (S_0_in).*ones(length(t_P));
+%
+%% Abrupt thinning 9-8 kyr BP (a la Spector et al., 2017)
+    load DH_DATA/Boundary_conditions/Diamond_Hill/Smooth9ka.mat
+    
+%choose cubic, linear, or step
+fit = 'linear';
 
-% % LGM ice 500 m thicker than today
-%   S_at_GL = S_0_in + interp1([t_P(1) -Stepwise9ka.Time' 0],...
-%       [Stepwise9ka.HeightAboveModern(1) Stepwise9ka.HeightAboveModern'...
-%       Stepwise9ka.HeightAboveModern(end)], t_P,'linear', 'extrap'); 
+S_at_GL = S_0_in + interp1(Rapid9ka.time, Rapid9ka.(fit), t_P, 'linear', 'extrap');
+%%
+
 % % LGM ice overtops Diamond Hill
-  
 
 %  S_at_GL = S_0_in + interp1([PollardModel.Time'], [PollardModel.HeightAboveModern'], t_P,'linear', 'extrap');
  

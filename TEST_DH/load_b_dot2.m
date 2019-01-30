@@ -117,7 +117,7 @@ elseif bdot5 == 1 && bdot6 ==1
     load Hat_RACMO2_3.mat
     Hat_distance_along_centerline2_3 = Hat_distance_along_centerline;
     Hat_SMB2_3 = Hat_SMB;
-    b_dot_LGM = interp1(Hat_distance_along_centerline2_3 + x_nodes(1), Hat_SMB2_3,...
+    b_dot_LGM = 0.6*interp1(Hat_distance_along_centerline2_3 + x_nodes(1), Hat_SMB2_3,...
         x_nodes, 'linear', 'extrap');   
     
     load Hat_RACMO2_1.mat
@@ -127,7 +127,7 @@ elseif bdot5 == 1 && bdot6 ==1
         x_nodes, 'linear', 'extrap');
     
     
-    weight = [linspace(0,1, ceil(N_t_nodes2 ./3)), ones(1, ceil(N_t_nodes2 ./3)), linspace(1,0, ceil(N_t_nodes2 ./3))];
+    weight = [linspace(0,1, ceil(N_t_nodes2 ./4)), ones(1, ceil(N_t_nodes2 ./2)), linspace(1,0, ceil(N_t_nodes2 ./4))];
 
     for ii = 1:N_t_nodes2
         b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));

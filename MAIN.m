@@ -577,36 +577,53 @@ if LGM_transient == 1
     
 load 'DH_DATA/Geochronology data/cosmo_data.mat'
 
-LW_x_P_ind = 13;
-MV_x_P_ind = 31;
-DAN_x_P_ind = 46;
+LW_x_P_ind = 13; LW_LGM_elev = 1300;
+MV_x_P_ind = 31; MV_LGM_elev = 1350;
+DAN_x_P_ind = 46; DAN_LGM_elev = 1500;
+
+LGM_plot_x = (x_P2([LW_x_P_ind, MV_x_P_ind, DAN_x_P_ind]) - x_P2(1))./1000;
+LGM_plot_elev = [LW_LGM_elev, MV_LGM_elev, DAN_LGM_elev];
+LGM_labels = {'LW', 'MV', 'DAN'};
     
     % Show glacier profiles
     figure(1); clf
     subplot(2,1,1)
-    plot(x_P/1000, B_P, x_P./1000, S_P(1:5:end,:)); hold on
-    plot(x_P/1000, smooth(S_modern), 'linewidth', 2)
+    Darwin_bed_plot = plot(x_P/1000, B_P, 'k', 'linewidth', 2);hold on
+    Darwin_surface_plot = plot(x_P/1000, smooth(S_modern),...
+        'linewidth', 1.5, 'color', [0.7 0.2 0.2]);
+    Darwin_model_plot = plot(x_P./1000, S_P(1:10:end,:),...
+        'color', [0 114 189]./255, 'linestyle', '--');
+
     title 'Darwin Glacier'
     set(gca, 'Fontsize', 14)
     ylabel ('Elevation (m asl)')
     xlabel ('Distance from grounding-line (km)')
     xlim([x_P(1) x_P(end)]./1000 + [-5 5])
     grid on; box on
+    legend([Darwin_bed_plot;Darwin_surface_plot ; Darwin_model_plot(1)], ...
+        {'Glacier bed';'Modern surface'; 'Modelled surface'}, 'location', 'se');
     
     subplot(2,1,2)
-    plot((x_P2 - x_P2(1))./1000, B_P2, (x_P2 - x_P2(1))./1000, S_P2(1:5:end,:)); hold on
-    plot((x_P2 - x_P2(1))./1000, smooth(S_modern2), 'linewidth', 2)
+    plot((x_P2 - x_P2(1))./1000, B_P2, 'k', 'linewidth', 2);hold on
+    plot((x_P2 - x_P2(1))./1000, S_P2(1:10:end,:), 'color',...
+        [0 114 189]./255, 'linestyle', '--');
+    plot((x_P2 - x_P2(1))./1000, smooth(S_modern2), 'linewidth',...
+        1.5, 'color', [0.7 0.2 0.2])
     title 'Hatherton Glacier'
     set(gca, 'Fontsize', 14)
     ylabel ('Elevation (m asl)')
+    ylim([-250 2000])
+    xlim([-5 80])
     xlabel ('Distance from Darwin (km)')
     grid on; box on
     
-    plot((x_P2([LW_x_P_ind, MV_x_P_ind, DAN_x_P_ind]) - x_P2(1))./1000, [1300 1350 1500], 'ko')
+    %plot LGM limits at each location on Hatherton
+    plot(LGM_plot_x, LGM_plot_elev, 'ko')
+    text(LGM_plot_x, LGM_plot_elev, LGM_labels,'horizontal', 'center', 'vertical', 'bottom')
     
     % Compare to data
     figure(2); clf
-    subplot(3,1,1); hold on
+    subplot(4,1,1); hold on
     plot(-t_P2/1000, S_P2(:,(DAN_x_P_ind-2):(DAN_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,DAN_x_P_ind), 'k',  'linewidth', 2)
     
@@ -624,7 +641,7 @@ DAN_x_P_ind = 46;
     set(gca, 'Fontsize', 12)
     grid on; box on
     
-    subplot(3,1,2); hold on
+    subplot(4,1,2); hold on
     plot(-t_P2/1000, S_P2(:,(MV_x_P_ind-2):(MV_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,MV_x_P_ind), 'k', 'linewidth', 2)
     
@@ -639,7 +656,7 @@ DAN_x_P_ind = 46;
     set(gca, 'Fontsize', 12)
     grid on; box on
     
-    subplot(3,1,3); hold on
+    subplot(4,1,3); hold on
     plot(-t_P2/1000, S_P2(:,(LW_x_P_ind-2):(LW_x_P_ind+2)), 'linewidth', 2,'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,LW_x_P_ind), 'k', 'linewidth', 2)
     
@@ -650,6 +667,18 @@ DAN_x_P_ind = 46;
     
     xlim([0 20])
     title 'Lake Wellman'
+    xlabel ('Time (kyr BP)')
+    ylabel ('Elevation (m)')
+    set(gca, 'Fontsize', 12)
+    grid on; box on
+       
+    subplot(4,1,4); hold on
+    plot(-t_P/1000, S_P(:,1), 'linewidth', 2,'color', [0.8 0.8 0.8])
+    plot(-t_P/1000, S_P(:,1), 'k', 'linewidth', 2)
+    
+        
+    xlim([0 20])
+    title 'Diamond Hill'
     xlabel ('Time (kyr BP)')
     ylabel ('Elevation (m)')
     set(gca, 'Fontsize', 12)
