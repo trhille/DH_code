@@ -34,7 +34,7 @@
 
 
 % -------------------------------------------------------------------------
-
+tic % Let's see how long this takes
 
 
 addpath('Factorize')             % use fast routines for matrix inversion.
@@ -706,7 +706,7 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     
 end
 
- 
+ toc
 % % Can this really be used to evaluate relative importance of dynamics vs.
 % % mass balance ... holds for ice mass frozen to the bed.
 % BDM_velocity      = interp1(measures_centerline_distance, measures_flowspeed, [x_P]);

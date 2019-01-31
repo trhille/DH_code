@@ -216,13 +216,20 @@ end   % if statement on temperature options
 %% test if it holds steady state
 %  S_at_GL = (S_0_in).*ones(length(t_P));
 %
-%% Abrupt thinning 9-8 kyr BP (a la Spector et al., 2017)
-    load DH_DATA/Boundary_conditions/Diamond_Hill/Smooth9ka.mat
-    
-%choose cubic, linear, or step
-fit = 'linear';
+%% Load surface elevation boundary conditions at grounding line. 
+%These are found in DH_DATA/Boundary_conditions/Diamond_Hill.
+%Choose which thinning history you would like to use
 
-S_at_GL = S_0_in + interp1(Rapid9ka.time, Rapid9ka.(fit), t_P, 'linear', 'extrap');
+scenario = 'Smooth9ka';
+%Choose step, linear, quad, or cubic
+fit = 'cubic';
+
+    load(['DH_DATA/Boundary_conditions/Diamond_Hill/', scenario, '.mat']);
+
+GL_curve = eval(scenario);
+
+
+S_at_GL = S_0_in + interp1(GL_curve.time, GL_curve.(fit), t_P, 'linear', 'extrap');
 %%
 
 % % LGM ice overtops Diamond Hill

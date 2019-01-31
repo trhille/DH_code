@@ -38,7 +38,7 @@ bedrock_height = data.parsed_output.DH.bedrock.HeightAboveIceMargin(bedrock_ind)
 %  scenarios, construct the curves, and save them.
 
 scenarios = readtable('Deglaciation_scenarios.csv');
-save_on = 'on'; %set to 'on' if you want to automatically save every scenario
+save_on = 'off'; %set to 'on' if you want to automatically save every scenario
 %% ??????????????????????????????????????????????????????????????????????????
 for jj = 1:length(scenarios.ScenarioName)
 
@@ -135,8 +135,8 @@ figure(jj)
 hold on
 plot([time, 30e3], S_at_GL_linear, 'k', 'linewidth', 1.5);
 plot([time, 30e3], S_at_GL_cubic, 'k:', 'linewidth', 3);
-% plot([time, 30e3], S_at_GL_step, 'k--', 'linewidth', 1.5);
-% plot([time, 30e3], S_at_GL_quad, 'k-.', 'linewidth', 1.5);
+plot([time, 30e3], S_at_GL_step, 'k--', 'linewidth', 1.5);
+plot([time, 30e3], S_at_GL_quad, 'k-.', 'linewidth', 1.5);
 
 xlim([0 2e4]); ylim([-50 500])
 title(scenarios.ScenarioName{jj})
