@@ -38,7 +38,7 @@ end
 
 
 
-    t_nodes = [-20000:100:0]'; 
+    t_nodes = [-30000:100:0]'; 
 if exist('LGM_b_dot') & LGM_b_dot == 1
     t_nodes = [-1e5:100:0]';
 end

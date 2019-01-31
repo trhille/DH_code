@@ -633,6 +633,12 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot(data.parsed_output.UM.erratics.t10St/1000,...
         data.parsed_output.UM.erratics.elev, 'ko',...
         'markerfacecolor', [0.8 0.8 0.8])
+    plot(data.parsed_output.BV.erratics.t10St/1000,...
+        data.parsed_output.BV.erratics.elev, 'ko',...
+        'markerfacecolor', [0.8 0.8 0.8])
+    plot(data.parsed_output.DV.erratics.t10St/1000,...
+        data.parsed_output.DV.erratics.elev, 'ko',...
+        'markerfacecolor', [0.8 0.8 0.8])
     
     xlim([0 20])
     title 'Dubris, Bibra, Danum'
@@ -647,6 +653,9 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     
     plot(data.parsed_output.MV_walls.erratics.t10St/1000,...
         data.parsed_output.MV_walls.erratics.elev, 'ko',...
+        'markerfacecolor', [0.8 0.8 0.8])
+    plot(data.parsed_output.MV_floor.erratics.t10St/1000,...
+        data.parsed_output.MV_floor.erratics.elev, 'ko',...
         'markerfacecolor', [0.8 0.8 0.8])
     xlim([0 20])
     
@@ -673,16 +682,25 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     grid on; box on
        
     subplot(4,1,4); hold on
-    plot(-t_P/1000, S_P(:,1), 'linewidth', 2,'color', [0.8 0.8 0.8])
-    plot(-t_P/1000, S_P(:,1), 'k', 'linewidth', 2)
+    plot(-t_P/1000, S_P(:,1) - S_0_in, 'linewidth', 2,'color', [0.8 0.8 0.8])
+    plot(-t_P/1000, S_P(:,1) - S_0_in, 'k', 'linewidth', 2)
     
-        
+    plot(data.parsed_output.DH.erratics.t10St/1000,...
+        data.parsed_output.DH.erratics.HeightAboveIceMargin, 'ko',...
+        'markerfacecolor', [0.8 0.8 0.8])
+    plot(data.parsed_output.DH.bedrock.t14St/1000,...
+        data.parsed_output.DH.bedrock.HeightAboveIceMargin, 'k<',...
+        'markerfacecolor', [0.8 0.8 0.8])
+    
+    
     xlim([0 20])
     title 'Diamond Hill'
     xlabel ('Time (kyr BP)')
-    ylabel ('Elevation (m)')
+    ylabel ('Height above modern (m)')
     set(gca, 'Fontsize', 12)
     grid on; box on
+    
+    
     
     % Plot up SMB
     figure(3); clf
