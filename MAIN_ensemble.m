@@ -74,7 +74,7 @@ global LGM_transient
 
 global thisrun
 
-%% 12/5 TH experimenting with loading in an ensemble.
+%% Force the flowband model with output of PSU ice sheet model ensemble
     sealev_ens = 'DH_DATA/Boundary_conditions/Diamond_Hill/sealev_ens.mat';
     sealev_ensObj = matfile('DH_DATA/Boundary_conditions/Diamond_Hill/sealev_ens.mat');
     ensemble_runs = whos(sealev_ensObj);
@@ -122,16 +122,16 @@ lower_resolution = 0;   % Runs faster. Use spatial step of multiple km.
 % Only one of these should be set = 1 at a time. 
 % For Darwin:
 deformation_only                           = 0;
-sliding_only                               = 1; 
-deformation_plus_sliding                   = 0; 
+sliding_only                               = 0; 
+deformation_plus_sliding                   = 1; 
 deformation_sliding_lateraldrag            = 0; % not included yet!
 deformation_sliding_longstress             = 0; % not included yet!
 deformation_sliding_lateraldrag_longstress = 0; % not included yet!
 
 % For Hatherton (always as XX2)
 deformation_only2                           = 0;
-sliding_only2                               = 1; 
-deformation_plus_sliding2                   = 0; 
+sliding_only2                               = 0; 
+deformation_plus_sliding2                   = 1; 
 deformation_sliding_lateraldrag2            = 0; % not included yet!
 deformation_sliding_longstress2             = 0; % not included yet!
 deformation_sliding_lateraldrag_longstress2 = 0; % not included yet!
@@ -242,7 +242,7 @@ LGM_transient    = 1;   % Sets prescribed S_at_GL for Darwin
 
 
 
-add_tributary_flux       = 0;   % add flux from tributaries at locations 
+add_tributary_flux       = 1;   % add flux from tributaries at locations 
                                 % along length of flowline; keep=0 for now.
 
 % initial value, or initial *guess* of temperature: must set one of these = 1!      
@@ -578,7 +578,7 @@ title('HATHERTON')
 
 end
 
-save(['TEST_DH/output/sealev_ens/sliding_only/', ensemble_runs(ens_member).name])
+ save(['TEST_DH/output/sealev_ens/deformation_plus_sliding/', ensemble_runs(ens_member).name])
  end
  
 % % Can this really be used to evaluate relative importance of dynamics vs.

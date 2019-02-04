@@ -219,30 +219,30 @@ end   % if statement on temperature options
 %% Load surface elevation boundary conditions at grounding line. 
 %These are found in DH_DATA/Boundary_conditions/Diamond_Hill.
 %Choose which thinning history you would like to use
-
-scenario = 'Smooth11ka';
-%Choose step, linear, quad, or cubic
-fit = 'linear';
-
-    load(['DH_DATA/Boundary_conditions/Diamond_Hill/', scenario, '.mat']);
-
-GL_curve = eval(scenario);
-
-
-S_at_GL = S_0_in + interp1(GL_curve.time, GL_curve.(fit), t_P, 'linear', 'extrap');
+% 
+% scenario = 'Smooth11ka';
+% %Choose step, linear, quad, or cubic
+% fit = 'linear';
+% 
+%     load(['DH_DATA/Boundary_conditions/Diamond_Hill/', scenario, '.mat']);
+% 
+% GL_curve = eval(scenario);
+% 
+% 
+% S_at_GL = S_0_in + interp1(GL_curve.time, GL_curve.(fit), t_P, 'linear', 'extrap');
 %%
 
-% % LGM ice overtops Diamond Hill
-
-%  S_at_GL = S_0_in + interp1([PollardModel.Time'], [PollardModel.HeightAboveModern'], t_P,'linear', 'extrap');
+%% Force with PSU ice sheet model ensemble output. Run with MAIN_ensemble.m 
  
-% S_at_GL = S_0_in + interp1([thisrun.Time'], [thisrun.HeightAboveModern'], t_P,'linear', 'extrap');
+ S_at_GL = S_0_in + interp1([t_P(1) thisrun.Time'], [thisrun.HeightAboveModern(1) thisrun.HeightAboveModern'], t_P,'linear', 'extrap');
   
+%%
   
     disp (' ')
     disp(' check S_at_GL in MAIN_Darwin! ')
     disp(' ')
     
+%% Some old PSU model output
   %  S_at_GL = S_0_in + interp1([t_P(1) -Smooth11ka.Time' 0], [Smooth11ka.HeightAboveModern(1) Smooth11ka.HeightAboveModern' Smooth11ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
   %  S_at_GL = S_0_in + interp1([t_P(1) -Smooth15ka.Time' 0], [Smooth15ka.HeightAboveModern(1) Smooth15ka.HeightAboveModern' Smooth15ka.HeightAboveModern(end)], t_P,'linear', 'extrap');
     
