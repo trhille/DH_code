@@ -576,6 +576,7 @@ end
 if LGM_transient == 1
     
 load 'DH_DATA/Geochronology data/cosmo_data.mat'
+load 'DH_DATA/Geochronology data/algae_data.mat'
 
 LW_x_P_ind = 13; LW_LGM_elev = 1300;
 MV_x_P_ind = 31; MV_LGM_elev = 1350;
@@ -627,6 +628,7 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot(-t_P2/1000, S_P2(:,(DAN_x_P_ind-2):(DAN_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,DAN_x_P_ind), 'k',  'linewidth', 2)
     
+    %plot exposure ages
     plot(data.parsed_output.DAN.erratics.t10St/1000,...
         data.parsed_output.DAN.erratics.elev, 'ko',...
         'markerfacecolor', [0.8 0.8 0.8])
@@ -639,6 +641,9 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot(data.parsed_output.DV.erratics.t10St/1000,...
         data.parsed_output.DV.erratics.elev, 'ko',...
         'markerfacecolor', [0.8 0.8 0.8])
+    %plot algae ages
+    plot(DAN_algae.calYrBP/1000, DAN_algae.Elevation, 'ks')
+    plot(DVBV_algae.calYrBP/1000, DVBV_algae.Elevation, 'ks')
     
     xlim([0 20])
     title 'Dubris, Bibra, Danum'
@@ -651,12 +656,18 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot(-t_P2/1000, S_P2(:,(MV_x_P_ind-2):(MV_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,MV_x_P_ind), 'k', 'linewidth', 2)
     
+    %plot exposure ages
     plot(data.parsed_output.MV_walls.erratics.t10St/1000,...
         data.parsed_output.MV_walls.erratics.elev, 'ko',...
         'markerfacecolor', [0.8 0.8 0.8])
     plot(data.parsed_output.MV_floor.erratics.t10St/1000,...
         data.parsed_output.MV_floor.erratics.elev, 'ko',...
         'markerfacecolor', [0.8 0.8 0.8])
+    
+    %plot algae ages
+    plot(MV_floor_algae.calYrBP/1000, MV_floor_algae.Elevation, 'ks')
+    plot(MV_walls_algae.calYrBP/1000, MV_walls_algae.Elevation, 'ks')
+    
     xlim([0 20])
     
     title 'Magnis Valley'
@@ -666,13 +677,16 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     grid on; box on
     
     subplot(4,1,3); hold on
+    %plot model timeseries
     plot(-t_P2/1000, S_P2(:,(LW_x_P_ind-2):(LW_x_P_ind+2)), 'linewidth', 2,'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,LW_x_P_ind), 'k', 'linewidth', 2)
     
-        
+    % plot exposure ages    
     plot(data.parsed_output.LW.erratics.t10St/1000,...
         data.parsed_output.LW.erratics.elev, 'ko',...
         'markerfacecolor', [0.8 0.8 0.8])
+    %plot algae ages
+    plot(LW_algae.calYrBP/1000, LW_algae.Elevation, 'ks')
     
     xlim([0 20])
     title 'Lake Wellman'
@@ -682,15 +696,20 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     grid on; box on
        
     subplot(4,1,4); hold on
+    % plot model timeseries
     plot(-t_P/1000, S_P(:,1) - S_0_in, 'linewidth', 2,'color', [0.8 0.8 0.8])
     plot(-t_P/1000, S_P(:,1) - S_0_in, 'k', 'linewidth', 2)
     
+    %plot exposure ages
     plot(data.parsed_output.DH.erratics.t10St/1000,...
         data.parsed_output.DH.erratics.HeightAboveIceMargin, 'ko',...
         'markerfacecolor', [0.8 0.8 0.8])
     plot(data.parsed_output.DH.bedrock.t14St/1000,...
         data.parsed_output.DH.bedrock.HeightAboveIceMargin, 'k<',...
         'markerfacecolor', [0.8 0.8 0.8])
+    
+    %Plot algae ages
+    plot(DH_Darwin_algae.AveCalYr/1000, DH_Darwin_algae.HeightAboveIceMargin, 'ks')
     
     
     xlim([0 20])
