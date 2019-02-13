@@ -25,6 +25,20 @@ centerline_y_interp = interp1((1:length(centerline.Y)),...
 LW_valley_limit_cosmo = {'13-HAT-030-LW', '13-HAT-029-LW', '13-HAT-031-LW'};
 LW_walls_limit_cosmo = {'13-HAT-044-LW', '13-HAT-047-LW', '13-HAT-006-LW',...
     '13-HAT-007-LW'};
+
+LW_walls_limit_cosmo_index = ismember(data.parsed_output.LW.erratics.SampleName,...
+    LW_walls_limit_cosmo);
+LW_valley_limit_cosmo_index = ismember(data.parsed_output.LW.erratics.SampleName,...
+    LW_valley_limit_cosmo);
+
+%indentify all samples that count as being on valley walls. This is
+%somewhat ambiguous.
+LW_walls_cosmo_samples = {'13-HAT-004-LW'; '13-HAT-006-LW'; '13-HAT-007-LW';...
+    '13-HAT-036-LW'; '13-HAT-041-LW'; '13-HAT-042-LW'; '13-HAT-044-LW'; 
+    '13-HAT-047-LW'};
+LW_walls_cosmo_index = ismember(data.parsed_output.LW.erratics.SampleName,...
+    LW_walls_cosmo_samples);
+
 %Index into the big data structure to access only those samples
 LW_valley_index = ismember(data.output.SampleName,...
     LW_valley_limit_cosmo);
@@ -85,11 +99,17 @@ plot(LW_limit_distance_to_centerline, LW_limit_elev, 'ko'); hold on
 % a little heavy-handed, but we are already making a biggish assumption
 % that the cross surface profile is a parabola and that the glacier width
 % does not change through time (ie., centerline stays put!).
-n = 2; %2nd order polynomial
-LW_poly = polyfit([-LW_limit_distance_to_centerline,LW_limit_distance_to_centerline] , [LW_limit_elev, LW_limit_elev],n);
+n = 1; %2nd order polynomial
+if n == 2
+    LW_poly = polyfit([-LW_limit_distance_to_centerline,...
+        LW_limit_distance_to_centerline] , [LW_limit_elev, LW_limit_elev],n);
+elseif n == 1
+    LW_poly = polyfit(LW_limit_distance_to_centerline, LW_limit_elev, n);
 
-LW_surface_profile = polyval(LW_poly, linspace(0, max(LW_limit_distance_to_centerline), 100));
+end
+ LW_surface_profile = polyval(LW_poly, linspace(0, max(LW_limit_distance_to_centerline), 100));
 
+LGM_surface_LW = LW_surface_profile(1);
 % now plot up the surface profile to make sure it's a good fit
 plot(linspace(0, max(LW_limit_distance_to_centerline), 100), LW_surface_profile)
 title ('Lake Wellman')
@@ -167,13 +187,19 @@ plot(MV_limit_distance_to_centerline, MV_limit_elev, 'ko'); hold on
 % a little heavy-handed, but we are already making a biggish assumption
 % that the cross surface profile is a parabola and that the glacier width
 % does not change through time (ie., centerline stays put!).
-n = 2; %2nd order polynomial
-MV_poly = polyfit([-MV_limit_distance_to_centerline,...
-    MV_limit_distance_to_centerline] , [MV_limit_elev, MV_limit_elev],n);
+n = 1; %2nd order polynomial
+if n == 2
+    MV_poly = polyfit([-MV_limit_distance_to_centerline,...
+        MV_limit_distance_to_centerline] , [MV_limit_elev, MV_limit_elev],n);
+elseif n == 1
+	MV_poly = polyfit(MV_limit_distance_to_centerline,...
+        MV_limit_elev,n); 
+end
 
 MV_surface_profile = polyval(MV_poly, linspace(0,...
     max(MV_limit_distance_to_centerline), 100));
 
+LGM_surface_MV = MV_surface_profile(1);
 % now plot up the surface profile to make sure it's a good fit
 plot(linspace(0, max(MV_limit_distance_to_centerline), 100), MV_surface_profile)
 title ('Magnis Valley')
@@ -181,95 +207,14 @@ xlabel ('Distance to centerline (m)')
 ylabel ('Elevation (m)')
 set (gca, 'fontsize', 13)
 
-%% Dubris Valley and Updog Mountain
-%Also copy-pasted from above, then edited. 
-
-%% Lake Wellman
-
-%define which samples consitute the LGM limit in the valley and on the
-%walls nearest the glacier
-LW_valley_limit_cosmo = {'13-HAT-030-LW', '13-HAT-029-LW', '13-HAT-031-LW'};
-LW_walls_limit_cosmo = {'13-HAT-044-LW', '13-HAT-047-LW', '13-HAT-006-LW',...
-    '13-HAT-007-LW'};
-%Index into the big data structure to access only those samples
-LW_valley_index = ismember(data.output.SampleName,...
-    LW_valley_limit_cosmo);
-LW_walls_index = ismember(data.output.SampleName,...
-    LW_walls_limit_cosmo);
-
-%find the elevations...
-LW_valley_limit_elev = data.output.elev(LW_valley_index);
-LW_walls_limit_elev = data.output.elev(LW_walls_index);
-
-%...and lat-lons
-LW_valley_limit_lat = data.input.lat(ismember(data.input.SampleName,...
-    LW_valley_limit_cosmo));
-LW_walls_limit_lat = data.input.lat(ismember(data.input.SampleName,...
-    LW_walls_limit_cosmo));
-
-LW_valley_limit_long = data.input.long(ismember(data.input.SampleName,...
-    LW_valley_limit_cosmo));
-LW_walls_limit_long = data.input.long(ismember(data.input.SampleName,...
-    LW_walls_limit_cosmo));
-
-% Convert to polar stereographic for calculation measurement
-[LW_valley_limit_x, LW_valley_limit_y] = ll2ps(LW_valley_limit_lat, ...
-    LW_valley_limit_long);
-
-[LW_walls_limit_x, LW_walls_limit_y] = ll2ps(LW_walls_limit_lat, ...
-    LW_walls_limit_long);
-
-
-%calculate euclidean distance to the Hatherton glacier centerline for each
-%sample. This is probably a good enough approximation
-for jj = 1:length(LW_valley_limit_cosmo)
-    LW_valley_distance_to_centerline(jj) = min(sqrt((centerline_x_interp - ...
-        LW_valley_limit_x(jj)).^2 + (centerline_y_interp - LW_valley_limit_y(jj)).^2));
-    
-end
-
-
-for kk = 1:length(LW_walls_limit_cosmo)
-    LW_walls_distance_to_centerline(kk) = min(sqrt((centerline_x_interp - ...
-        LW_walls_limit_x(kk)).^2 + (centerline_y_interp - LW_walls_limit_y(kk)).^2));
-   
-end
-
-%Concatenate all together, since we are fitting one curve to these two
-%populations
-
-LW_limit_distance_to_centerline = [LW_valley_distance_to_centerline, LW_walls_distance_to_centerline];
-LW_limit_elev = [LW_valley_limit_elev', LW_walls_limit_elev'];
-
-%plot it up to make sure it looks reasonable
-figure(1)
-plot(LW_limit_distance_to_centerline, LW_limit_elev, 'ko'); hold on
-
-% Good! Now fit a parabola to this, and evaluate it out to estimate the
-% centerline thickness. We mirror elevations across the glacier to ensure
-% a concave-down parabola, symmetric about the glacier centerline. Probably
-% a little heavy-handed, but we are already making a biggish assumption
-% that the cross surface profile is a parabola and that the glacier width
-% does not change through time (ie., centerline stays put!).
-n = 2; %2nd order polynomial
-LW_poly = polyfit([-LW_limit_distance_to_centerline,LW_limit_distance_to_centerline] , [LW_limit_elev, LW_limit_elev],n);
-
-LW_surface_profile = polyval(LW_poly, linspace(0, max(LW_limit_distance_to_centerline), 100));
-
-% now plot up the surface profile to make sure it's a good fit
-plot(linspace(0, max(LW_limit_distance_to_centerline), 100), LW_surface_profile)
-title ('Lake Wellman')
-xlabel ('Distance to centerline (m)')
-ylabel ('Elevation (m)')
-set (gca, 'fontsize', 13)
-
-%% Magnis Valley 
+%% Dubris Valley 
 %(copy-pasted from Lake Wellman and then edited)
 
 %define which samples consitute the LGM limit in the valley and on the
 %walls nearest the glacier
 DV_limit_cosmo = {'13-HAT-067-DV', '13-HAT-068-DV', '13-HAT-069-DV'};
 UM_limit_cosmo = {'13-HAT-137-UM', '13-HAT-138-UM', '13-HAT-140-UM'};
+
    
 %Index into the big data structure to access only those samples
 DV_limit_index = ismember(data.output.SampleName,...
@@ -338,12 +283,16 @@ plot(DVBV_limit_distance_to_centerline, DVBV_limit_elev, 'ko'); hold on
 % a little heavy-handed, but we are already making a biggish assumption
 % that the cross surface profile is a parabola and that the glacier width
 % does not change through time (ie., centerline stays put!).
-n = 2; %2nd order polynomial
-DV_poly = polyfit([-DVBV_limit_distance_to_centerline,...
-    DVBV_limit_distance_to_centerline] , [DVBV_limit_elev, DVBV_limit_elev],n);
+n = 1; %2nd order polynomial
+% DV_poly = polyfit([-DVBV_limit_distance_to_centerline,...
+%     DVBV_limit_distance_to_centerline] , [DVBV_limit_elev, DVBV_limit_elev],n);
 
+DV_poly = polyfit(DVBV_limit_distance_to_centerline, DVBV_limit_elev,n);
 DV_surface_profile = polyval(DV_poly, linspace(0,...
     max(DVBV_limit_distance_to_centerline), 100));
+
+
+
 
 % now plot up the surface profile to make sure it's a good fit
 plot(linspace(0, max(DVBV_limit_distance_to_centerline), 100), DV_surface_profile)
@@ -367,28 +316,120 @@ for jj = 1:length(data.output.distance_to_centerline)
     
 end
 
+dS_dx = mean([100/2500, 131/6800]);
+dS_dx = 100/2500;
+dS_dx = 131/6824;
 
-centerline_elev = data.output.elev + mean([100/2500, 131/6800]).*data.output.distance_to_centerline; 
-centerline_elev_err = mean([100/2500, 131/6800]).*data.output.distance_to_centerline./2;
+centerline_elev = data.output.elev + dS_dx.*data.output.distance_to_centerline; 
+centerline_elev_err = dS_dx.*data.output.distance_to_centerline./2;
 
-figure(5);clf;  hold on; box on; grid on
+figure(5);%clf;  hold on; box on; grid on
 DV_plot = errorbar(data.output.t10St(DV_index),centerline_elev(DV_index), centerline_elev_err(DV_index), 'ks');
 BV_plot = errorbar(data.output.t10St(BV_index),centerline_elev(BV_index), centerline_elev_err(BV_index), 'ks');
 
 DAN_plot = errorbar(data.output.t10St(DAN_index), centerline_elev(DAN_index), centerline_elev_err(DAN_index),'rs');
 UM_plot = errorbar(data.output.t10St(UM_index), centerline_elev(UM_index), centerline_elev_err(UM_index),'rs');
 
-% plot(data.output.t10St(DV_index),centerline_elev(DV_index), 'ko')
-% plot(data.output.t10St(BV_index),centerline_elev(BV_index), 'ko')
-% 
-% plot(data.output.t10St(DAN_index), centerline_elev(DAN_index), 'rs')
-% plot(data.output.t10St(UM_index), centerline_elev(UM_index), 'rs')
+plot(data.output.t10St(DV_index),centerline_elev(DV_index), 'ko')
+plot(data.output.t10St(BV_index),centerline_elev(BV_index), 'ko')
+
+plot(data.output.t10St(DAN_index), centerline_elev(DAN_index), 'rs')
+plot(data.output.t10St(UM_index), centerline_elev(UM_index), 'rs', 'markerfacecolor', 'b')
 
 xlim([0 12e3])
 xlabel ('yr BP')
 ylabel ('Projected glacier centerline elevation (m)')
 set(gca, 'fontsize', 14)
-legend([DV_plot, DAN_plot], {'Dubris and Bibra Valleys', 'Danum Platform and Updog Mtn'})
 
 
+%% Best estimate of LGM surface elevation is mean of highest erratics and
+% linear fit at x = 0. The elevation span from the highest erratic to the
+% mean could probably be considered 2 SDs, since the erratic is a strict
+% minimum. Hence, the factor of 1.96 below in LGM_surface_*_sigma
 
+LGM_surface_DV_elev = mean(polyval(DV_poly, [0,...
+    DVBV_limit_distance_to_centerline(DVBV_limit_elev==max(DVBV_limit_elev))]));
+LGM_surface_DV_sigma = 1/1.96 * abs(diff(polyval(DV_poly, [0,...
+    DVBV_limit_distance_to_centerline(DVBV_limit_elev==max(DVBV_limit_elev))]))./2);
+
+LGM_surface_MV_elev = mean(polyval(MV_poly, [0,...
+    MV_limit_distance_to_centerline(MV_limit_elev==max(MV_limit_elev))]));
+LGM_surface_MV_sigma = 1/1.96 * abs(diff(polyval(MV_poly, [0,...
+    MV_limit_distance_to_centerline(MV_limit_elev==max(MV_limit_elev))]))./2);
+
+LGM_surface_LW_elev = mean(polyval(LW_poly, [0,...
+    LW_limit_distance_to_centerline(LW_limit_elev==max(LW_limit_elev))]));
+LGM_surface_LW_sigma = 1/1.96 * abs(diff(polyval(LW_poly, [0,...
+    LW_limit_distance_to_centerline(LW_limit_elev==max(LW_limit_elev))]))./2);
+
+DVBV_shift = LGM_surface_DV_elev - mean(DV_limit_elev);
+DAN_UM_shift = LGM_surface_DV_elev - mean(UM_limit_elev);
+MV_walls_shift = LGM_surface_MV_elev - mean(MV_walls_limit_elev);
+MV_floor_shift = LGM_surface_MV_elev - mean(MV_valley_limit_elev);
+LW_valley_shift = LGM_surface_LW_elev - mean(LW_valley_limit_elev);
+LW_walls_shift = LGM_surface_LW_elev - mean(LW_walls_limit_elev);
+
+
+%% Convert to fraction of total elevation change, where 1 is LGM, 0 is modern glacier
+LW_margin = 870;
+MV_margin = 1000;
+DVBV_margin = 1130;
+
+%LW
+LW_algae_elev_frac = (LW_algae.Elevation - LW_margin)...
+    ./(polyval(LW_poly, max(LW_limit_distance_to_centerline)) - LW_margin);
+
+LW_walls_cosmo_elev_frac = (data.parsed_output.LW.erratics.elev(LW_walls_cosmo_index) ...
+    - LW_margin) ./ (polyval(LW_poly,...
+    LW_limit_distance_to_centerline(LW_limit_elev==max(LW_limit_elev))) ...
+    - LW_margin);
+
+LW_valley_cosmo_elev_frac = (data.parsed_output.LW.erratics.elev(~LW_walls_cosmo_index) ...
+    - LW_margin) ./ (polyval(LW_poly, max(LW_limit_distance_to_centerline)) ...
+    - LW_margin);
+
+%MV
+MV_walls_algae_elev_frac = (MV_walls_algae.Elevation - MV_margin)...
+    ./(polyval(MV_poly, MV_limit_distance_to_centerline(MV_limit_elev == ...
+    max(MV_limit_elev))) - MV_margin);
+MV_floor_algae_elev_frac = (MV_floor_algae.Elevation - MV_margin)...
+    ./(polyval(MV_poly, max(MV_limit_distance_to_centerline)) - MV_margin);
+
+MV_walls_cosmo_elev_frac = (data.parsed_output.MV_walls.erratics.elev ...
+    - MV_margin) ./ (polyval(MV_poly,...
+    MV_limit_distance_to_centerline(MV_limit_elev == ...
+    max(MV_limit_elev))) - MV_margin);
+
+MV_floor_cosmo_elev_frac = (data.parsed_output.MV_floor.erratics.elev ...
+    - MV_margin) ./ (polyval(MV_poly,...
+    max(MV_limit_distance_to_centerline)) - MV_margin);
+
+%DV, BV, DAN, UM
+DV_cosmo_elev_frac = (data.parsed_output.DV.erratics.elev ...
+    - DVBV_margin) ./ (polyval(DV_poly,...
+    max(DVBV_limit_distance_to_centerline)) - DVBV_margin);
+BV_cosmo_elev_frac = (data.parsed_output.BV.erratics.elev ...
+    - DVBV_margin) ./ (polyval(DV_poly,...
+    max(DVBV_limit_distance_to_centerline)) - DVBV_margin);
+
+DAN_cosmo_elev_frac = (data.parsed_output.DAN.erratics.elev ...
+    - DVBV_margin) ./ (polyval(DV_poly,...
+    UM_distance_to_centerline(UM_limit_elev == ...
+    max(UM_limit_elev))) - DVBV_margin);
+
+UM_cosmo_elev_frac = (data.parsed_output.UM.erratics.elev ...
+    - DVBV_margin) ./ (polyval(DV_poly,...
+    UM_distance_to_centerline(UM_limit_elev == ...
+    max(UM_limit_elev))) - DVBV_margin);
+
+DVBV_algae_elev_frac = (DVBV_algae.Elevation - DVBV_margin) ./ ...
+    (polyval(DV_poly, max(DVBV_limit_distance_to_centerline)) - DVBV_margin);
+
+DAN_algae_elev_frac = (DAN_algae.Elevation - DVBV_margin) ./ ...
+    (polyval(DV_poly,UM_distance_to_centerline(UM_limit_elev == ...
+    max(UM_limit_elev))) - DVBV_margin);
+
+
+% %%
+ save geochron_constraints.mat LGM_surface*_elev LGM_surface_*_sigma ...
+     *_shift *elev_frac LW_walls_cosmo_index -append

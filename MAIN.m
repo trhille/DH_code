@@ -577,13 +577,14 @@ if LGM_transient == 1
     
 load 'DH_DATA/Geochronology data/cosmo_data.mat'
 load 'DH_DATA/Geochronology data/algae_data.mat'
+load 'DH_DATA/Geochronology data/geochron_constraints.mat'
 
-LW_x_P_ind = 13; LW_LGM_elev = 1300;
-MV_x_P_ind = 31; MV_LGM_elev = 1350;
-DAN_x_P_ind = 46; DAN_LGM_elev = 1500;
+LW_x_P_ind = 13; 
+MV_x_P_ind = 31; 
+DAN_x_P_ind = 46; 
 
 LGM_plot_x = (x_P2([LW_x_P_ind, MV_x_P_ind, DAN_x_P_ind]) - x_P2(1))./1000;
-LGM_plot_elev = [LW_LGM_elev, MV_LGM_elev, DAN_LGM_elev];
+LGM_plot_elev = [LGM_surface_LW_elev, LGM_surface_MV_elev, LGM_surface_DV_elev];
 LGM_labels = {'LW', 'MV', 'DAN'};
     
     % Show glacier profiles
@@ -591,7 +592,7 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     subplot(2,1,1)
     Darwin_bed_plot = plot(x_P/1000, B_P, 'k', 'linewidth', 2);hold on
     Darwin_surface_plot = plot(x_P/1000, smooth(S_modern),...
-        'linewidth', 1.5, 'color', [0.7 0.2 0.2]);
+        'linewidth', 1.5, 'color', [0 114 189]./255);
     Darwin_model_plot = plot(x_P./1000, S_P(1:10:end,:),...
         'color', [0 114 189]./255, 'linestyle', '--');
 
@@ -609,7 +610,7 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot((x_P2 - x_P2(1))./1000, S_P2(1:10:end,:), 'color',...
         [0 114 189]./255, 'linestyle', '--');
     plot((x_P2 - x_P2(1))./1000, smooth(S_modern2), 'linewidth',...
-        1.5, 'color', [0.7 0.2 0.2])
+        1.5, 'color', [0 114 189]./255)
     title 'Hatherton Glacier'
     set(gca, 'Fontsize', 14)
     ylabel ('Elevation (m asl)')
@@ -628,23 +629,29 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot(-t_P2/1000, S_P2(:,(DAN_x_P_ind-2):(DAN_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,DAN_x_P_ind), 'k',  'linewidth', 2)
     
-    %plot exposure ages
-    plot(data.parsed_output.DAN.erratics.t10St/1000,...
-        data.parsed_output.DAN.erratics.elev, 'ko',...
-        'markerfacecolor', [0.8 0.8 0.8])
-    plot(data.parsed_output.UM.erratics.t10St/1000,...
-        data.parsed_output.UM.erratics.elev, 'ko',...
-        'markerfacecolor', [0.8 0.8 0.8])
-    plot(data.parsed_output.BV.erratics.t10St/1000,...
-        data.parsed_output.BV.erratics.elev, 'ko',...
-        'markerfacecolor', [0.8 0.8 0.8])
-    plot(data.parsed_output.DV.erratics.t10St/1000,...
-        data.parsed_output.DV.erratics.elev, 'ko',...
-        'markerfacecolor', [0.8 0.8 0.8])
-    %plot algae ages
-    plot(DAN_algae.calYrBP/1000, DAN_algae.Elevation, 'ks')
-    plot(DVBV_algae.calYrBP/1000, DVBV_algae.Elevation, 'ks')
-    
+    %plot exposure ages projected onto glacier centerline
+
+plot(data.parsed_output.DAN.erratics.t10St/1000,...
+    DAN_cosmo_elev_frac.* (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
+     S_modern2(DAN_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
+plot(data.parsed_output.DV.erratics.t10St/1000,...
+    DV_cosmo_elev_frac.* (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
+     S_modern2(DAN_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
+plot(data.parsed_output.BV.erratics.t10St/1000,...
+    BV_cosmo_elev_frac.* (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
+     S_modern2(DAN_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8]) 
+plot(data.parsed_output.UM.erratics.t10St/1000,...
+    UM_cosmo_elev_frac.* (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
+     S_modern2(DAN_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
+ 
+    %plot algae ages projected onto glacier centerline
+plot(DAN_algae.calYrBP/1000, DAN_algae_elev_frac.*...
+    (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
+     S_modern2(DAN_x_P_ind), 'ks')
+plot(DVBV_algae.calYrBP/1000, DVBV_algae_elev_frac.*...
+    (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
+     S_modern2(DAN_x_P_ind), 'ks') 
+ 
     xlim([0 20])
     title 'Dubris, Bibra, Danum'
     xlabel ('Time (kyr BP)')
@@ -656,17 +663,22 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot(-t_P2/1000, S_P2(:,(MV_x_P_ind-2):(MV_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,MV_x_P_ind), 'k', 'linewidth', 2)
     
-    %plot exposure ages
+    %plot exposure ages projected to glacier centerline
     plot(data.parsed_output.MV_walls.erratics.t10St/1000,...
-        data.parsed_output.MV_walls.erratics.elev, 'ko',...
-        'markerfacecolor', [0.8 0.8 0.8])
+        MV_walls_cosmo_elev_frac.* (LGM_surface_MV_elev - S_modern2(MV_x_P_ind)) + ...
+         S_modern2(MV_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
     plot(data.parsed_output.MV_floor.erratics.t10St/1000,...
-        data.parsed_output.MV_floor.erratics.elev, 'ko',...
-        'markerfacecolor', [0.8 0.8 0.8])
-    
+        MV_floor_cosmo_elev_frac.* (LGM_surface_MV_elev - S_modern2(MV_x_P_ind)) + ...
+         S_modern2(MV_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
+   
     %plot algae ages
-    plot(MV_floor_algae.calYrBP/1000, MV_floor_algae.Elevation, 'ks')
-    plot(MV_walls_algae.calYrBP/1000, MV_walls_algae.Elevation, 'ks')
+    plot(MV_floor_algae.calYrBP/1000, MV_floor_algae_elev_frac.* ... 
+        (LGM_surface_MV_elev - S_modern2(MV_x_P_ind)) + ...
+     S_modern2(MV_x_P_ind), 'ks')
+ 
+    plot(MV_walls_algae.calYrBP/1000, MV_walls_algae_elev_frac.* ... 
+        (LGM_surface_MV_elev - S_modern2(MV_x_P_ind)) + ...
+     S_modern2(MV_x_P_ind), 'ks')
     
     xlim([0 20])
     
@@ -681,12 +693,21 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot(-t_P2/1000, S_P2(:,(LW_x_P_ind-2):(LW_x_P_ind+2)), 'linewidth', 2,'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,LW_x_P_ind), 'k', 'linewidth', 2)
     
-    % plot exposure ages    
-    plot(data.parsed_output.LW.erratics.t10St/1000,...
-        data.parsed_output.LW.erratics.elev, 'ko',...
-        'markerfacecolor', [0.8 0.8 0.8])
+    
+    % plot exposure ages, projected onto glacier centerline   
+    plot(data.parsed_output.LW.erratics.t10St(LW_walls_cosmo_index)/1000,...
+        LW_walls_cosmo_elev_frac.* (LGM_surface_LW_elev - S_modern2(LW_x_P_ind)) + ...
+         S_modern2(LW_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
+       hold on
+    plot(data.parsed_output.LW.erratics.t10St(~LW_walls_cosmo_index)/1000,...
+        LW_valley_cosmo_elev_frac.* (LGM_surface_LW_elev - S_modern2(LW_x_P_ind)) + ...
+         S_modern2(LW_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
+     
     %plot algae ages
-    plot(LW_algae.calYrBP/1000, LW_algae.Elevation, 'ks')
+    hold on
+    plot(LW_algae.calYrBP/1000, LW_algae_elev_frac.* ... 
+        (LGM_surface_LW_elev - S_modern2(LW_x_P_ind)) + ...
+        S_modern2(LW_x_P_ind), 'ks')
     
     xlim([0 20])
     title 'Lake Wellman'
