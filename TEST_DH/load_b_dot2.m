@@ -18,7 +18,7 @@ bdot2 = 0;
 bdot3 = 0;
 bdot4 = 0;
 bdot5 = 1;
-bdot6 = 1;
+bdot6 = 0;
 
 
 disp (' ')

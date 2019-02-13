@@ -219,22 +219,22 @@ end   % if statement on temperature options
 %% Load surface elevation boundary conditions at grounding line. 
 %These are found in DH_DATA/Boundary_conditions/Diamond_Hill.
 %Choose which thinning history you would like to use
+% % 
+% scenario = 'Smooth9ka';
+% %Choose step, linear, quad, or cubic
+% fit = 'linear';
 % 
-scenario = 'Smooth9ka';
-%Choose step, linear, quad, or cubic
-fit = 'linear';
-
-    load(['DH_DATA/Boundary_conditions/Diamond_Hill/', scenario, '.mat']);
-
-GL_curve = eval(scenario);
-
-
-S_at_GL = S_0_in + interp1(GL_curve.time, GL_curve.(fit), t_P, 'linear', 'extrap');
+%     load(['DH_DATA/Boundary_conditions/Diamond_Hill/', scenario, '.mat']);
+% 
+% GL_curve = eval(scenario);
+% 
+% 
+% S_at_GL = S_0_in + interp1(GL_curve.time, GL_curve.(fit), t_P, 'linear', 'extrap');
 %%
 
 %% Force with PSU ice sheet model ensemble output. Run with MAIN_ensemble.m 
  
-%  S_at_GL = S_0_in + interp1([t_P(1) thisrun.Time'], [thisrun.HeightAboveModern(1) thisrun.HeightAboveModern'], t_P,'linear', 'extrap');
+S_at_GL = S_0_in + interp1([t_P(1) thisrun.Time'], [thisrun.HeightAboveModern(1) thisrun.HeightAboveModern'], t_P,'linear', 'extrap');
   
 %%
   
