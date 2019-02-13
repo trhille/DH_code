@@ -578,7 +578,7 @@ title('HATHERTON')
 
 end
 
- save(['TEST_DH/output/sealev_ens/deformation_plus_sliding/', ensemble_runs(ens_member).name])
+ save(['TEST_DH/output/sealev_ens/deformation_and_sliding/', ensemble_runs(ens_member).name])
  end
  
 % % Can this really be used to evaluate relative importance of dynamics vs.
