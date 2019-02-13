@@ -2,17 +2,20 @@
 % output in a given directory at Diamond Hill, Lake Wellman, Magnis Valley,
 % and Dubris Valley
 addpath '/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Manuscript/Figures/scripts/'
-LW_ind = 13;
-MV_ind = 31;
-DV_ind = 46;
+LW_x_P_ind = 13;
+MV_x_P_ind = 31;
+DV_x_P_ind = 46;
+
+% load constraints so you can score the model run
+load 'DH_DATA/Geochronology data/geochron_constraints.mat'
 load 'DH_DATA/Geochronology data/cosmo_data.mat'
+% get the names of all runs in the ensemble you are scoring
 runs_dir = ['/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Modeling/Koutnik',...
-    ' model/DH_code/TEST_DH/output/sealev_ens/deformation_and_sliding/'];
+    ' model/DH_code/TEST_DH/output/sealev_ens/deformation_and_sliding_varying_climate/'];
 
-runs_dir_content = struct2table(dir(runs_dir));
-ens_runs = runs_dir_content.name(3:end);
+runs_dir_content = struct2table(dir([runs_dir, '*.mat']));
+ens_runs = runs_dir_content.name;
 
-load_constraints_for_scoring;
 %initialize tables that will hold scores
 RMS_scores = table;
 RMS_scores.name = ens_runs;
@@ -23,14 +26,25 @@ RMS_scores.ocfac = 0.5.*~cellfun('isempty',strfind(RMS_scores.name, 'ocfac0_5'))
 RMS_scores.crhshelf = 1e-5.*~cellfun('isempty',strfind(RMS_scores.name, 'shelf5'))...
     + 1e-6.*~cellfun('isempty',strfind(RMS_scores.name, 'shelf6')) ...
     + 1e-7.*~cellfun('isempty',strfind(RMS_scores.name, 'shelf7'));
+RMS_scores.calv = 0.7.*~cellfun('isempty', strfind(RMS_scores.name, 'calv0_7')) ...
+    + 1.*~cellfun('isempty', strfind(RMS_scores.name, 'calv1'));
 RMS_scores.LR04_sealev = 1-cellfun('isempty',strfind(RMS_scores.name, 'FORCEPLEIST'));
 
-RMS_scores.DV = nan*ones(length(ens_runs),1);
-RMS_scores.MV = nan*ones(length(ens_runs),1);
-RMS_scores.LW = nan*ones(length(ens_runs), 1);
-RMS_scores.DH = nan*ones(length(ens_runs), 1);
+RMS_scores.DV_cosmo = nan*ones(length(ens_runs),1);
+RMS_scores.MV_cosmo = nan*ones(length(ens_runs),1);
+RMS_scores.LW_cosmo = nan*ones(length(ens_runs), 1);
+RMS_scores.DH_cosmo = nan*ones(length(ens_runs), 1);
+
+RMS_scores.DV_algae = nan*ones(length(ens_runs),1);
+RMS_scores.MV_algae = nan*ones(length(ens_runs),1);
+RMS_scores.LW_algae = nan*ones(length(ens_runs), 1);
+RMS_scores.DH_algae = nan*ones(length(ens_runs), 1);
+
 RMS_scores.total = nan*ones(length(ens_runs), 1);
 
+
+%% Now loop through each run in the ensemble and score it against the geochronologic data,
+%which includes the modern glacier surface
 for jj = 1:length(ens_runs)
         plotline = {'Color', [0.6 0.6 0.6]};
   
@@ -44,17 +58,17 @@ for jj = 1:length(ens_runs)
     figure(1)
     hold on
     DV_ax = gca;
-    plot(-t_P2, S_P2(:, DV_ind), plotline{:}, 'linewidth', 1.25);
+    plot(-t_P2, S_P2(:, DV_x_P_ind), plotline{:}, 'linewidth', 1.25);
     
     figure(2)
     hold on
     MV_ax = gca;
-    plot(-t_P2, S_P2(:, MV_ind), plotline{:}, 'linewidth', 1.25);
+    plot(-t_P2, S_P2(:, MV_x_P_ind), plotline{:}, 'linewidth', 1.25);
     
     figure(3)
     hold on
     LW_ax = gca;
-    plot(-t_P2, S_P2(:, LW_ind), plotline{:}, 'linewidth', 1.25);
+    plot(-t_P2, S_P2(:, LW_x_P_ind), plotline{:}, 'linewidth', 1.25);
 
     figure(4)
     hold on
@@ -63,13 +77,15 @@ for jj = 1:length(ens_runs)
    
 %% Now score this model run against geochronology
 
-model_DV = interp1(-t_P2, S_P2(:, DV_ind),DAN_UM_DV_BV_ages);
-RMS_scores.DV(jj) = sqrt(sum((DAN_UM_DV_BV_elev - model_DV).^2)./length(DAN_UM_DV_BV_elev));
+model_DV = interp1(-t_P2, S_P2(:, DV_x_P_ind), DAN_UM_DV_BV_ages);
 
-model_MV = interp1(-t_P2, S_P2(:, MV_ind), MV_ages);
+RMS_scores.DV_cosmo(jj) = sqrt(sum((DAN_UM_DV_BV_elev - model_DV).^2)./length(DAN_UM_DV_BV_elev));
+RMS_scores.DV_algae(jj) = sqrt(sum((DAN_UM_DV_BV_elev - model_DV).^2)./length(DAN_UM_DV_BV_elev));
+
+model_MV = interp1(-t_P2, S_P2(:, MV_x_P_ind), MV_ages);
 RMS_scores.MV(jj) = sqrt(sum((MV_elev - model_MV).^2)./length(MV_elev));
 
-model_LW = interp1(-t_P2, S_P2(:, LW_ind), LW_ages);
+model_LW = interp1(-t_P2, S_P2(:, LW_x_P_ind), LW_ages);
 RMS_scores.LW(jj) = sqrt(sum((LW_elev - model_LW).^2)./length(LW_elev));
 
 model_DH = interp1(-t_P, S_P(:, 1)-S_at_GL(end), DH_ages);
@@ -181,16 +197,16 @@ load([runs_dir,'/', ens_runs{highest_scores_index(jj)}], 't_P', 't_P2', ...
 
     hold on
     DV_ax = gca;
-    plot(-t_P2, S_P2(:, DV_ind), 'Color', colors(jj,:), 'linewidth', 2);
+    plot(-t_P2, S_P2(:, DV_x_P_ind), 'Color', colors(jj,:), 'linewidth', 2);
     
     figure(2)
     hold on
-    plot(-t_P2, S_P2(:, MV_ind), 'Color', colors(jj,:),  'linewidth', 2);
+    plot(-t_P2, S_P2(:, MV_x_P_ind), 'Color', colors(jj,:),  'linewidth', 2);
     
     figure(3)
     hold on
     LW_ax = gca;
-    plot(-t_P2, S_P2(:, LW_ind), 'Color', colors(jj,:), 'linewidth', 2);
+    plot(-t_P2, S_P2(:, LW_x_P_ind), 'Color', colors(jj,:), 'linewidth', 2);
 
     
     figure(4)
