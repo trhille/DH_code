@@ -9,12 +9,15 @@ DV_x_P_ind = 46;
 % load constraints so you can score the model run
 load 'DH_DATA/Geochronology data/geochron_constraints.mat'
 load 'DH_DATA/Geochronology data/cosmo_data.mat'
+load 'DH_DATA/Geochronology data/algae_data.mat'
 % get the names of all runs in the ensemble you are scoring
 runs_dir = ['/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Modeling/Koutnik',...
-    ' model/DH_code/TEST_DH/output/sealev_ens/deformation_and_sliding_varying_climate/'];
+    ' model/DH_code/TEST_DH/output/sealev_ens/deformation_and_sliding/'];
 
 runs_dir_content = struct2table(dir([runs_dir, '*.mat']));
 ens_runs = runs_dir_content.name;
+
+load([runs_dir,'/', ens_runs{1}], 't_P2')
 
 %initialize tables that will hold scores
 RMS_scores = table;
@@ -27,7 +30,7 @@ RMS_scores.crhshelf = 1e-5.*~cellfun('isempty',strfind(RMS_scores.name, 'shelf5'
     + 1e-6.*~cellfun('isempty',strfind(RMS_scores.name, 'shelf6')) ...
     + 1e-7.*~cellfun('isempty',strfind(RMS_scores.name, 'shelf7'));
 RMS_scores.calv = 0.7.*~cellfun('isempty', strfind(RMS_scores.name, 'calv0_7')) ...
-    + 1.*~cellfun('isempty', strfind(RMS_scores.name, 'calv1'));
+    + 1.*cellfun('isempty', strfind(RMS_scores.name, 'calv0_7'));
 RMS_scores.LR04_sealev = 1-cellfun('isempty',strfind(RMS_scores.name, 'FORCEPLEIST'));
 
 RMS_scores.DV_cosmo = nan*ones(length(ens_runs),1);
@@ -42,6 +45,62 @@ RMS_scores.DH_algae = nan*ones(length(ens_runs), 1);
 
 RMS_scores.total = nan*ones(length(ens_runs), 1);
 
+%% Concatenate ages together for scoring
+% For erratics Be-10 and bedrock C-14
+DAN_UM_DV_BV_cosmo_ages = [data.parsed_output.DAN.erratics.t10St; ...
+    data.parsed_output.UM.erratics.t10St; ...
+    data.parsed_output.DV.erratics.t10St; ...
+    data.parsed_output.BV.erratics.t10St];
+
+DAN_UM_DV_BV_ages_index = DAN_UM_DV_BV_cosmo_ages<=-t_P2(1);
+
+DAN_UM_DV_BV_cosmo_ages = DAN_UM_DV_BV_cosmo_ages(DAN_UM_DV_BV_ages_index);
+
+DAN_UM_DV_BV_cosmo_elev = [DAN_cosmo2center; UM_cosmo2center; ...
+    DV_cosmo2center; BV_cosmo2center];
+DAN_UM_DV_BV_cosmo_elev = DAN_UM_DV_BV_cosmo_elev(DAN_UM_DV_BV_ages_index);
+
+MV_cosmo_ages = [data.parsed_output.MV_walls.erratics.t10St; ...
+    data.parsed_output.MV_floor.erratics.t10St];
+
+MV_cosmo_ages_index = MV_cosmo_ages<=-t_P2(1);
+
+MV_cosmo_elev = [MV_walls_cosmo2center; MV_floor_cosmo2center];
+MV_cosmo_elev = MV_cosmo_elev(MV_cosmo_ages_index);
+MV_cosmo_ages = MV_cosmo_ages(MV_cosmo_ages_index);
+
+LW_cosmo_ages = [data.parsed_output.LW.erratics.t10St(LW_walls_cosmo_index); ...
+    data.parsed_output.LW.erratics.t10St(~LW_walls_cosmo_index)]; 
+LW_cosmo_ages_index = (LW_cosmo_ages<=-t_P2(1));
+
+LW_cosmo_elev = [LW_walls_cosmo2center; LW_valley_cosmo2center];
+LW_cosmo_ages = LW_cosmo_ages(LW_cosmo_ages_index);
+LW_cosmo_elev = LW_cosmo_elev(LW_cosmo_ages_index);
+
+DH_cosmo_ages = [data.parsed_output.DH.erratics.t10St; ...
+    data.parsed_output.DH.bedrock.t14St];
+DH_cosmo_ages_index = (DH_cosmo_ages<=-t_P2(1));
+
+DH_cosmo_elev = [data.parsed_output.DH.erratics.HeightAboveIceMargin; ...
+    data.parsed_output.DH.bedrock.HeightAboveIceMargin];
+DH_cosmo_elev = DH_cosmo_elev(DH_cosmo_ages_index);
+DH_cosmo_ages = DH_cosmo_ages(DH_cosmo_ages_index);
+
+% For algae radiocarbon
+
+DAN_UM_DV_BV_algae_ages = [DAN_algae.calYrBP; DVBV_algae.calYrBP];
+DAN_UM_DV_BV_algae_elev = [DAN_algae2center; DVBV_algae2center];
+
+MV_algae_ages = [MV_walls_algae.calYrBP; MV_floor_algae.calYrBP];
+MV_algae_elev = [MV_walls_algae2center; MV_floor_algae2center];
+
+LW_algae_ages = LW_algae.calYrBP;
+LW_algae_elev = LW_algae2center;
+
+DH_algae_ages = [DH_Darwin_algae.AveCalYr; DH_Diamond_algae.AveCalYr];
+DH_algae_elev = [DH_Darwin_algae.HeightAboveIceMargin; ...
+    DH_Diamond_algae.HeightAboveIceMargin];
+    
 
 %% Now loop through each run in the ensemble and score it against the geochronologic data,
 %which includes the modern glacier surface
@@ -77,19 +136,45 @@ for jj = 1:length(ens_runs)
    
 %% Now score this model run against geochronology
 
-model_DV = interp1(-t_P2, S_P2(:, DV_x_P_ind), DAN_UM_DV_BV_ages);
+model_DV_cosmo = interp1(-t_P2, S_P2(:, DV_x_P_ind), ...
+    sort(DAN_UM_DV_BV_cosmo_ages, 'descend'));
+model_DV_algae = interp1(-t_P2, S_P2(:, DV_x_P_ind), ...
+    sort(DAN_UM_DV_BV_algae_ages, 'descend'));
 
-RMS_scores.DV_cosmo(jj) = sqrt(sum((DAN_UM_DV_BV_elev - model_DV).^2)./length(DAN_UM_DV_BV_elev));
-RMS_scores.DV_algae(jj) = sqrt(sum((DAN_UM_DV_BV_elev - model_DV).^2)./length(DAN_UM_DV_BV_elev));
+RMS_scores.DV_cosmo(jj) = sqrt(sum((DAN_UM_DV_BV_cosmo_elev - ... 
+    model_DV_cosmo).^2)./length(DAN_UM_DV_BV_cosmo_elev));
+RMS_scores.DV_algae(jj) = sqrt(sum((DAN_UM_DV_BV_algae_elev - ...
+    model_DV_algae).^2)./length(DAN_UM_DV_BV_algae_elev));
 
-model_MV = interp1(-t_P2, S_P2(:, MV_x_P_ind), MV_ages);
-RMS_scores.MV(jj) = sqrt(sum((MV_elev - model_MV).^2)./length(MV_elev));
+model_MV_cosmo = interp1(-t_P2, S_P2(:, MV_x_P_ind), ... 
+    sort(MV_cosmo_ages, 'descend'));
+model_MV_algae = interp1(-t_P2, S_P2(:, MV_x_P_ind), ... 
+    sort(MV_algae_ages, 'descend'));
 
-model_LW = interp1(-t_P2, S_P2(:, LW_x_P_ind), LW_ages);
-RMS_scores.LW(jj) = sqrt(sum((LW_elev - model_LW).^2)./length(LW_elev));
+RMS_scores.MV_cosmo(jj) = sqrt(sum((MV_cosmo_elev - ... 
+    model_MV_cosmo).^2)./length(MV_cosmo_elev));
+RMS_scores.MV_algae(jj) = sqrt(sum((MV_algae_elev - ... 
+    model_MV_algae).^2)./length(MV_algae_elev));
 
-model_DH = interp1(-t_P, S_P(:, 1)-S_at_GL(end), DH_ages);
-RMS_scores.DH(jj) = sqrt(sum((DH_elev - model_DH).^2)./length(DH_elev));
+model_LW_cosmo = interp1(-t_P2, S_P2(:, LW_x_P_ind), ...
+    sort(LW_cosmo_ages, 'descend'));
+model_LW_algae = interp1(-t_P2, S_P2(:, LW_x_P_ind), ...
+    sort(LW_algae_ages, 'descend'));
+
+RMS_scores.LW_cosmo(jj) = sqrt(sum((LW_cosmo_elev - ... 
+    model_LW_cosmo).^2)./length(LW_cosmo_elev));
+RMS_scores.LW_algae(jj) = sqrt(sum((LW_algae_elev - ... 
+    model_LW_algae).^2)./length(LW_algae_elev));
+
+model_DH_cosmo = interp1(-t_P, S_P(:, 1)-S_at_GL(end), ...
+    sort(DH_cosmo_ages, 'descend'));
+model_DH_algae = interp1(-t_P, S_P(:, 1)-S_at_GL(end), ...
+    sort(DH_algae_ages, 'descend'));
+
+RMS_scores.DH_cosmo(jj) = sqrt(sum((DH_cosmo_elev - ...
+    model_DH_cosmo).^2)./length(DH_cosmo_elev));
+RMS_scores.DH_algae(jj) = sqrt(sum((DH_algae_elev - ...
+    model_DH_algae).^2)./length(DH_algae_elev));
 
 % RMS_scores.total(jj) = (RMS_scores.DAN(jj).*RMS_scores.DV(jj).*RMS_scores.MV(jj)...
 %     .*RMS_scores.LW(jj).*RMS_scores.DH(jj)).^(1/5);
@@ -101,54 +186,94 @@ end
 end
 %% total model score following section 2.4.1 (approach [a]) from Pollard et al., 2016
 
-DV50 = median(RMS_scores.DV(1:end-1));
-MV50 = median(RMS_scores.MV(1:end-1));
-LW50 = median(RMS_scores.LW(1:end-1));
-DH50 = median(RMS_scores.DH(1:end-1));
+DV50_cosmo = median(RMS_scores.DV_cosmo(1:end-1));
+MV50_cosmo = median(RMS_scores.MV_cosmo(1:end-1));
+LW50_cosmo = median(RMS_scores.LW_cosmo(1:end-1));
+DH50_cosmo = median(RMS_scores.DH_cosmo(1:end-1));
 
-RMS_scores.total = exp(-(RMS_scores.DV./DV50 +...
-    RMS_scores.MV./MV50 + RMS_scores.LW./LW50 + RMS_scores.DH./DH50));
+DV50_algae = median(RMS_scores.DV_algae(1:end-1));
+MV50_algae = median(RMS_scores.MV_algae(1:end-1));
+LW50_algae = median(RMS_scores.LW_algae(1:end-1));
+DH50_algae = median(RMS_scores.DH_algae(1:end-1));
 
+RMS_scores.cosmo_total = exp(-(RMS_scores.DV_cosmo./DV50_cosmo +...
+    RMS_scores.MV_cosmo./MV50_cosmo + RMS_scores.LW_cosmo./LW50_cosmo ...
+    + RMS_scores.DH_cosmo./DH50_cosmo));
 
+RMS_scores.algae_total = exp(-(RMS_scores.DV_algae./DV50_algae +...
+    RMS_scores.MV_algae./MV50_algae + RMS_scores.LW_algae./LW50_algae + ...
+    RMS_scores.DH_algae./DH50_algae));
 %% model score statistics for each parameter
-tau1000_mean = mean(RMS_scores.total(RMS_scores.tau==1000));
-tau1000_std = std(RMS_scores.total(RMS_scores.tau==1000));
-tau2000_mean = mean(RMS_scores.total(RMS_scores.tau==2000));
-tau2000_std = std(RMS_scores.total(RMS_scores.tau==2000));
+tau1000_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.tau==1000));
+tau1000_mean_algae = mean(RMS_scores.algae_total(RMS_scores.tau==1000));
+tau1000_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.tau==1000));
+tau1000_std_algae = std(RMS_scores.algae_total(RMS_scores.tau==1000));
+tau2000_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.tau==2000));
+tau2000_mean_algae = mean(RMS_scores.algae_total(RMS_scores.tau==2000));
+tau2000_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.tau==2000));
+tau2000_std_algae = std(RMS_scores.algae_total(RMS_scores.tau==2000));
 
-ocfac0_5_mean = mean(RMS_scores.total(RMS_scores.ocfac==0.5));
-ocfac0_5_std = std(RMS_scores.total(RMS_scores.ocfac==0.5));
-ocfac1_mean = mean(RMS_scores.total(RMS_scores.ocfac==1));
-ocfac1_std = std(RMS_scores.total(RMS_scores.ocfac==1));
+ocfac0_5_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.ocfac==0.5));
+ocfac0_5_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.ocfac==0.5));
+ocfac1_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.ocfac==1));
+ocfac1_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.ocfac==1));
+ocfac0_5_mean_algae = mean(RMS_scores.algae_total(RMS_scores.ocfac==0.5));
+ocfac0_5_std_algae = std(RMS_scores.algae_total(RMS_scores.ocfac==0.5));
+ocfac1_mean_algae = mean(RMS_scores.algae_total(RMS_scores.ocfac==1));
+ocfac1_std_algae = std(RMS_scores.algae_total(RMS_scores.ocfac==1));
 
-shelf5_mean = mean(RMS_scores.total(RMS_scores.crhshelf == 1e-5));
-shelf5_std = std(RMS_scores.total(RMS_scores.crhshelf == 1e-5));
-shelf6_mean = mean(RMS_scores.total(RMS_scores.crhshelf == 1e-6));
-shelf6_std = std(RMS_scores.total(RMS_scores.crhshelf == 1e-6));
-shelf7_mean = mean(RMS_scores.total(RMS_scores.crhshelf == 1e-7));
-shelf7_std = std(RMS_scores.total(RMS_scores.crhshelf == 1e-7));
 
-FORCEPLEIST_mean = mean(RMS_scores.total(RMS_scores.LR04_sealev == true));
-FORCEPLEIST_std = std(RMS_scores.total(RMS_scores.LR04_sealev == true));
-SPRATT_mean = mean(RMS_scores.total(RMS_scores.LR04_sealev == false));
-SPRATT_std = std(RMS_scores.total(RMS_scores.LR04_sealev == false));
+shelf5_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.crhshelf == 1e-5));
+shelf5_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.crhshelf == 1e-5));
+shelf6_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.crhshelf == 1e-6));
+shelf6_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.crhshelf == 1e-6));
+shelf7_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.crhshelf == 1e-7));
+shelf7_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.crhshelf == 1e-7));
+shelf5_mean_algae = mean(RMS_scores.algae_total(RMS_scores.crhshelf == 1e-5));
+shelf5_std_algae = std(RMS_scores.algae_total(RMS_scores.crhshelf == 1e-5));
+shelf6_mean_algae = mean(RMS_scores.algae_total(RMS_scores.crhshelf == 1e-6));
+shelf6_std_algae = std(RMS_scores.algae_total(RMS_scores.crhshelf == 1e-6));
+shelf7_mean_algae = mean(RMS_scores.algae_total(RMS_scores.crhshelf == 1e-7));
+shelf7_std_algae = std(RMS_scores.algae_total(RMS_scores.crhshelf == 1e-7));
+
+calv0_7_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.calv == 0.7));
+calv0_7_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.calv == 0.7));
+calv1_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.calv == 1));
+calv1_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.calv == 1));
+calv0_7_mean_algae = mean(RMS_scores.algae_total(RMS_scores.calv == 0.7));
+calv0_7_std_algae = std(RMS_scores.algae_total(RMS_scores.calv == 0.7));
+calv1_mean_algae = mean(RMS_scores.algae_total(RMS_scores.calv == 1));
+calv1_std_algae = std(RMS_scores.algae_total(RMS_scores.calv == 1));
+
+FORCEPLEIST_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.LR04_sealev == true));
+FORCEPLEIST_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.LR04_sealev == true));
+SPRATT_mean_cosmo = mean(RMS_scores.cosmo_total(RMS_scores.LR04_sealev == false));
+SPRATT_std_cosmo = std(RMS_scores.cosmo_total(RMS_scores.LR04_sealev == false));
+
+FORCEPLEIST_mean_algae = mean(RMS_scores.algae_total(RMS_scores.LR04_sealev == true));
+FORCEPLEIST_std_algae = std(RMS_scores.algae_total(RMS_scores.LR04_sealev == true));
+SPRATT_mean_algae = mean(RMS_scores.algae_total(RMS_scores.LR04_sealev == false));
+SPRATT_std_algae = std(RMS_scores.algae_total(RMS_scores.LR04_sealev == false));
 %% plot extracted datapoints
 
 figure(1)
     hold on
     title({'\it Dubris and Bibra Valleys,'; 'Danum Platform, Updog Mtn '}, 'FontWeight', 'normal')
-    plot(DAN_UM_DV_BV_ages, DAN_UM_DV_BV_elev, 'ko', 'MarkerFaceColor', [0.8, 0.8, 0.8]);
-%     plot(DV_BV_ages, DV_BV_elev, 'ko', 'MarkerFaceColor', [0.8, 0.8, 0.8]);
+    DAN_UM_DV_BV_cosmo_plot = plot(DAN_UM_DV_BV_cosmo_ages, DAN_UM_DV_BV_cosmo_elev, 'ko', 'MarkerFaceColor', [0.8, 0.8, 0.8]);
+    DAN_UM_DV_BV_algae_plot = plot(DAN_UM_DV_BV_algae_ages, DAN_UM_DV_BV_algae_elev, 'ko', 'MarkerFaceColor', [0.2, 0.8, 0.8]);
     set(gca, 'Fontsize', 15, 'Xticklabel', [0 5 10 15 20])
     set(gcf, 'Position', [202   438   292   260], 'PaperPositionMode', 'auto')
     ylabel('Elevation (m)')
     xlabel ('Age (kyr BP)')
+    legend([DAN_UM_DV_BV_cosmo_plot, DAN_UM_DV_BV_algae_plot], ...
+        {'^1^0Be Exposure ages'; 'Algae ^1^4C ages'})
     grid on
     
 figure(2)
     hold on
     title('\it Magnis Valley ', 'FontWeight', 'normal')
-    plot(MV_ages, MV_elev, 'ko', 'MarkerFaceColor', [0.8 0.8 0.8]);
+    plot(MV_cosmo_ages, MV_cosmo_elev, 'ko', 'MarkerFaceColor', [0.8 0.8 0.8]);
+    plot(MV_algae_ages, MV_algae_elev, 'ko', 'MarkerFaceColor', [0.2 0.8 0.8]);
     set(gca, 'Fontsize', 15, 'Xticklabel', [0 5 10 15 20])
     set(gcf, 'Position', [202   438   292   260], 'PaperPositionMode', 'auto')
     ylabel('Elevation (m)')
@@ -158,7 +283,8 @@ figure(2)
 figure(3)
     hold on
     title('\it Lake Wellman ', 'FontWeight', 'normal')
-    plot(LW_ages, LW_elev, 'ko', 'MarkerFaceColor', [0.8 0.8 0.8]);
+    plot(LW_cosmo_ages, LW_cosmo_elev, 'ko', 'MarkerFaceColor', [0.8 0.8 0.8]);
+    plot(LW_algae_ages, LW_algae_elev, 'ko', 'MarkerFaceColor', [0.2 0.8 0.8]);
     set(gca, 'Fontsize', 15, 'Xticklabel', [0 5 10 15 20])
     set(gcf, 'Position', [202   438   292   260], 'PaperPositionMode', 'auto')
     ylabel('Elevation (m)')
@@ -168,7 +294,8 @@ figure(3)
 figure(4)
     hold on
     title('\it Diamond Hill ', 'FontWeight', 'normal')
-    plot(DH_ages, DH_elev, 'ko', 'MarkerFaceColor', [0.8 0.8 0.8])
+    plot(DH_cosmo_ages, DH_cosmo_elev, 'ko', 'MarkerFaceColor', [0.8 0.8 0.8])
+    plot(DH_algae_ages, DH_algae_elev, 'ko', 'MarkerFaceColor', [0.2 0.8 0.8])
     set(gca, 'Fontsize', 15, 'Xticklabel', [0 5 10 15 20])
     set(gcf, 'Position', [202   438   292   260], 'PaperPositionMode', 'auto')
     ylabel('Height above modern glacier (m)')
