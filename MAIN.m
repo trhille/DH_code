@@ -626,14 +626,14 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     % Compare to data
     figure(2); clf
     subplot(4,1,1); hold on
-    plot(-t_P2/1000, S_P2(:,(DAN_x_P_ind-2):(DAN_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
-    plot(-t_P2/1000, S_P2(:,DAN_x_P_ind), 'k',  'linewidth', 2)
+%     plot(-t_P2/1000, S_P2(:,(DAN_x_P_ind-2):(DAN_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
+    S_P_plot = plot(-t_P2/1000, S_P2(:,DAN_x_P_ind), 'k',  'linewidth', 2);
     
     %plot exposure ages projected onto glacier centerline
 
-    plot(data.parsed_output.DAN.erratics.t10St/1000,...
+    Be10_plot = plot(data.parsed_output.DAN.erratics.t10St/1000,...
         DAN_cosmo_elev_frac.* (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
-         S_modern2(DAN_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
+         S_modern2(DAN_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8]);
     plot(data.parsed_output.DV.erratics.t10St/1000,...
         DV_cosmo_elev_frac.* (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
          S_modern2(DAN_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
@@ -645,16 +645,16 @@ LGM_labels = {'LW', 'MV', 'DAN'};
          S_modern2(DAN_x_P_ind), 'ko', 'markerfacecolor', [0.8 0.8 0.8])
  
     %plot algae ages projected onto glacier centerline
-    plot(DAN_algae.calYrBP/1000, DAN_algae_elev_frac.*...
+    algae_plot = plot(DAN_algae.calYrBP/1000, DAN_algae_elev_frac.*...
         (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
-         S_modern2(DAN_x_P_ind), 'ks')
+         S_modern2(DAN_x_P_ind), 'ks');
     plot(DVBV_algae.calYrBP/1000, DVBV_algae_elev_frac.*...
         (LGM_surface_DV_elev - S_modern2(DAN_x_P_ind)) + ...
          S_modern2(DAN_x_P_ind), 'ks') 
  
   
     % plot modern glacier surface
-    plot(0, S_modern2(DAN_x_P_ind), 'k*')
+    S_modern_plot =plot(0, S_modern2(DAN_x_P_ind), 'k*');
     xlim([0 20])
     
     title 'Dubris, Bibra, Danum'
@@ -662,9 +662,11 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     ylabel ('Elevation (m)')
     set(gca, 'Fontsize', 12)
     grid on; box on
-    
+    legend([S_P_plot, Be10_plot, algae_plot, S_modern_plot], ...
+        {'Modeled glacier surface', '^1^0Be exposure age',...
+        '^1^4C algae age', 'Modern glacier surface'})
     subplot(4,1,2); hold on
-    plot(-t_P2/1000, S_P2(:,(MV_x_P_ind-2):(MV_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
+%     plot(-t_P2/1000, S_P2(:,(MV_x_P_ind-2):(MV_x_P_ind+2)), 'linewidth', 2, 'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,MV_x_P_ind), 'k', 'linewidth', 2)
     
     %plot exposure ages projected to glacier centerline
@@ -697,7 +699,7 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     
     subplot(4,1,3); hold on
     %plot model timeseries
-    plot(-t_P2/1000, S_P2(:,(LW_x_P_ind-2):(LW_x_P_ind+2)), 'linewidth', 2,'color', [0.8 0.8 0.8])
+%     plot(-t_P2/1000, S_P2(:,(LW_x_P_ind-2):(LW_x_P_ind+2)), 'linewidth', 2,'color', [0.8 0.8 0.8])
     plot(-t_P2/1000, S_P2(:,LW_x_P_ind), 'k', 'linewidth', 2)
     
     
@@ -736,13 +738,15 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot(data.parsed_output.DH.erratics.t10St/1000,...
         data.parsed_output.DH.erratics.HeightAboveIceMargin, 'ko',...
         'markerfacecolor', [0.8 0.8 0.8])
-    plot(data.parsed_output.DH.bedrock.t14St/1000,...
+    bedrock_plot = plot(data.parsed_output.DH.bedrock.t14St/1000,...
         data.parsed_output.DH.bedrock.HeightAboveIceMargin, 'k<',...
-        'markerfacecolor', [0.8 0.8 0.8])
+        'markerfacecolor', [0.8 0.8 0.8]);
+    saturation_elev = plot([0 30], [479 479], 'k--', 'linewidth', 2);
     
     %Plot algae ages
     plot(DH_Darwin_algae.AveCalYr/1000, DH_Darwin_algae.HeightAboveIceMargin, 'ks')
-    
+    legend([saturation_elev, bedrock_plot],...
+        {'^1^4C-saturated bedrock', 'Bedrock ^1^4C age'})
     
     xlim([0 20])
     title 'Diamond Hill'

@@ -13,13 +13,16 @@ global lapse_LGM
 
 addpath(DIRECTORY_data)
 
+scale_Taylor_Dome = 1;
 
 bdot1 = 0;
 bdot2 = 0;
 bdot3 = 0;
 bdot4 = 0;
 bdot5 = 1;
-bdot6 = 1;
+bdot6 = 0;
+bdot7 = 0;
+bdot8 = 0;
 
 disp (' ')
 disp ('Check bdot prescribed in load_b_dot.m')
@@ -41,7 +44,7 @@ load DH_surf_bed.mat
 
 %%
 
-if bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6 == 1
+if bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6 + bdot7 + bdot8 == 1
 
 if (bdot1 == 1)
 % % ------------------------------
@@ -98,7 +101,7 @@ end
     b_dot_nodes(ii,:) = b_dot_use;
   end
 
-elseif bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6> 1
+elseif bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6 + bdot7 + bdot8  > 1
 
 if bdot1 == 1 && bdot2 == 1
     weight = linspace(1,0, N_t_nodes);
@@ -115,7 +118,7 @@ if bdot1 == 1 && bdot2 == 1
     end
     
     
-elseif bdot5 == 1 && bdot6 ==1
+elseif bdot5 == 1 && bdot6 == 1
     load Darwin_RACMO2_3.mat
     Darwin_distance_along_centerline2_3 = Darwin_distance_along_centerline;
     Darwin_SMB2_3 = Darwin_SMB;
@@ -134,9 +137,71 @@ elseif bdot5 == 1 && bdot6 ==1
         b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
     end
 
+elseif bdot5 == 1 && bdot7 == 1
+load Darwin_RACMO2_3.mat
+Darwin_distance_along_centerline2_3 = Darwin_distance_along_centerline;
+Darwin_SMB2_3 = Darwin_SMB;
+b_dot_LGM = interp1(Darwin_distance_along_centerline2_3 + x_nodes(1), Darwin_SMB2_3,...
+    x_nodes, 'linear', 'extrap');   
+
+load Darwin_RACMO2_1.mat
+Darwin_distance_along_centerline2_1 = Darwin_distance_along_centerline;
+Darwin_SMB2_1 = Darwin_SMB; clear Darwin_distance_along_centerline Darwin_SMB
+b_dot_modern = interp1(Darwin_distance_along_centerline2_1 + x_nodes(1), Darwin_SMB2_1,...
+    x_nodes, 'linear', 'extrap');
+
+weight = [linspace(0,1, ceil(N_t_nodes ./4)), ones(1, ceil(N_t_nodes ./2)), linspace(1,0, ceil(N_t_nodes ./4))];
+
+for ii = 1:N_t_nodes
+    b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
+end
+
+elseif bdot5 == 1 && bdot8 == 1
+load Darwin_RACMO2_3.mat
+Darwin_distance_along_centerline2_3 = Darwin_distance_along_centerline;
+Darwin_SMB2_3 = Darwin_SMB;
+b_dot_LGM = 2*interp1(Darwin_distance_along_centerline2_3 + x_nodes(1), Darwin_SMB2_3,...
+    x_nodes, 'linear', 'extrap');   
+
+load Darwin_RACMO2_1.mat
+Darwin_distance_along_centerline2_1 = Darwin_distance_along_centerline;
+Darwin_SMB2_1 = Darwin_SMB; clear Darwin_distance_along_centerline Darwin_SMB
+b_dot_modern = interp1(Darwin_distance_along_centerline2_1 + x_nodes(1), Darwin_SMB2_1,...
+    x_nodes, 'linear', 'extrap');
+
+weight = [linspace(0,1, ceil(N_t_nodes ./4)), ones(1, ceil(N_t_nodes ./2)), linspace(1,0, ceil(N_t_nodes ./4))];
+
+for ii = 1:N_t_nodes
+    b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
+end    
 end
 
 end 
+%% This scales a given modern accumulation rate to the Taylor Dome record 
+%from Monnin et al. (2004) in terms of % of modern accumulation rate. This
+%can be used with any combination of bdotx above, but only really makes
+%sense to use bdot5 or bdot6
+
+if scale_Taylor_Dome == 1
+    TD_record = readtable('DH_DATA/Taylor_Dome_accum_rate.csv');
+    
+     % use nearest interpolation to pin the record at the edges so it
+     % doesn't grow enormous towards the modern
+    TD_accum_rate_interp = interp1(TD_record.yr_BP, ...
+        TD_record.accum_rate, t_nodes, 'nearest', 'extrap');
+    
+    %normalize to modern
+    TD_accum_frac_modern = smooth(TD_accum_rate_interp./TD_accum_rate_interp(end));
+    
+    n_t_spinup = 15; %number of timesteps used for spinup to new accum rate
+    TD_accum_frac_modern(1:n_t_spinup) = linspace(1, ...
+        TD_accum_frac_modern(n_t_spinup), n_t_spinup);
+     
+    for ii = 1:N_t_nodes
+    b_dot_nodes(ii,:) = b_dot_nodes(ii,:) .* TD_accum_frac_modern(ii);
+    end
+end  
+    
 
 
   
@@ -191,4 +256,4 @@ end
 %                            repmat( t_P, 1, length( x_P) ), ...
 %                            b_dot_P, x_edges, t_P );   
 %                        b_dot_edges(:,1) = b_dot_edges(:,2);
-                                               
+end                                              

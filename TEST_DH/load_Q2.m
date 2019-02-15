@@ -31,10 +31,12 @@ function  [ Q_0_in, ...
   Q_ext_L_nodes = 0 * ones(size(t_nodes)); %-Q_0_in * ones(size(t_nodes));
   Q_ext_R_nodes = 0 * ones(size(t_nodes)); %-Q_0_in * ones(size(t_nodes));
  
-%    load TEST_DH/values_for_Qext_R.mat 
-%    Q_ext_R_nodes = 75e3 * values; 
+   flux_in = 0e3;
+    load TEST_DH/values_for_Qext_R.mat 
+   values = interp1(t_P, values, t_nodes);
+   Q_ext_R_nodes = flux_in * values; 
   
-  
+ 
 % % Linearly decreasing flux:
 % % -------------------------
 %   Q_ext_L_nodes = 0 * ones(size(t_nodes));

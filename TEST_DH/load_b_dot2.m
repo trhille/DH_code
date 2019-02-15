@@ -12,14 +12,16 @@ global lapse_LGM
 
 addpath(DIRECTORY_data)
 
+scale_Taylor_Dome = 1;
 
 bdot1 = 0;
 bdot2 = 0;
 bdot3 = 0;
 bdot4 = 0;
 bdot5 = 1;
-bdot6 = 1;
-
+bdot6 = 0;
+bdot7 = 0;
+bdot8 = 0;
 
 disp (' ')
 disp ('Check bdot prescribed in load_b_dot2.m')
@@ -42,7 +44,7 @@ load DH_accum_width_velocity.mat
 load DH_surf_bed.mat
 
 %%
-if bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6 == 1
+if bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6 + bdot7 + bdot8 == 1
 
 if (bdot1 == 1)
 % % ------------------------------
@@ -98,7 +100,7 @@ for ii = 1:N_t_nodes2
 b_dot_nodes(ii,:) = b_dot_use;
 end
 
-elseif bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6 > 1
+elseif bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6 + bdot7 + bdot8 > 1
 
 if bdot1 == 1 && bdot2 == 1
     weight = linspace(1,0, N_t_nodes2);
@@ -113,6 +115,7 @@ if bdot1 == 1 && bdot2 == 1
         b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
     end
     
+    %%% Or use RACMO2.3 scaled by 60% for LGM, and RACMO2.1 for modern
 elseif bdot5 == 1 && bdot6 ==1
     load Hat_RACMO2_3.mat
     Hat_distance_along_centerline2_3 = Hat_distance_along_centerline;
@@ -132,9 +135,76 @@ elseif bdot5 == 1 && bdot6 ==1
     for ii = 1:N_t_nodes2
         b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
     end
+
+    %%% Or use full RACMO2.3 for LGM accumulation, RACMO2.1 for modern
+elseif bdot5 == 1 && bdot7 ==1
+    load Hat_RACMO2_3.mat
+    Hat_distance_along_centerline2_3 = Hat_distance_along_centerline;
+    Hat_SMB2_3 = Hat_SMB;
+    b_dot_LGM = interp1(Hat_distance_along_centerline2_3 + x_nodes(1), Hat_SMB2_3,...
+        x_nodes, 'linear', 'extrap');   
+    
+    load Hat_RACMO2_1.mat
+    Hat_distance_along_centerline2_1 = Hat_distance_along_centerline;
+    Hat_SMB2_1 = Hat_SMB; clear Hat_distance_along_centerline Hat_SMB
+    b_dot_modern = interp1(Hat_distance_along_centerline2_1 + x_nodes(1), Hat_SMB2_1,...
+        x_nodes, 'linear', 'extrap');
+    
+    
+    weight = [linspace(0,1, ceil(N_t_nodes2 ./4)), ones(1, ceil(N_t_nodes2 ./2)), linspace(1,0, ceil(N_t_nodes2 ./4))];
+
+    for ii = 1:N_t_nodes2
+        b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
+    end
+    
+elseif bdot5 == 1 && bdot8 ==1
+load Hat_RACMO2_3.mat
+Hat_distance_along_centerline2_3 = Hat_distance_along_centerline;
+Hat_SMB2_3 = Hat_SMB;
+b_dot_LGM = 2*interp1(Hat_distance_along_centerline2_3 + x_nodes(1), Hat_SMB2_3,...
+    x_nodes, 'linear', 'extrap');   
+
+load Hat_RACMO2_1.mat
+Hat_distance_along_centerline2_1 = Hat_distance_along_centerline;
+Hat_SMB2_1 = Hat_SMB; clear Hat_distance_along_centerline Hat_SMB
+b_dot_modern = interp1(Hat_distance_along_centerline2_1 + x_nodes(1), Hat_SMB2_1,...
+    x_nodes, 'linear', 'extrap');
+
+
+weight = [linspace(0,1, ceil(N_t_nodes2 ./4)), ones(1, ceil(N_t_nodes2 ./2)), linspace(1,0, ceil(N_t_nodes2 ./4))];
+
+for ii = 1:N_t_nodes2
+    b_dot_nodes(ii,:) = b_dot_LGM.*weight(ii) + b_dot_modern.*(1-weight(ii));
+end
 end
 
 end
+
+
+%% This scales a given modern accumulation rate to the Taylor Dome record 
+%from Monnin et al. (2004) in terms of % of modern accumulation rate. This
+%can be used with any combination of bdotx above, but only really makes
+%sense to use bdot5 or bdot6
+
+if scale_Taylor_Dome == 1
+    TD_record = readtable('DH_DATA/Taylor_Dome_accum_rate.csv');
+    
+     % use nearest interpolation to pin the record at the edges so it
+     % doesn't grow enormous towards the modern
+    TD_accum_rate_interp = interp1(TD_record.yr_BP, ...
+        TD_record.accum_rate, t_nodes, 'nearest', 'extrap');
+    
+    %normalize to modern
+    TD_accum_frac_modern = smooth(TD_accum_rate_interp./TD_accum_rate_interp(end));
+    
+    n_t_spinup = 15; %number of timesteps used for spinup to new accum rate
+    TD_accum_frac_modern(1:n_t_spinup) = linspace(1, ...
+        TD_accum_frac_modern(n_t_spinup), n_t_spinup);
+     
+    for ii = 1:N_t_nodes2
+    b_dot_nodes(ii,:) = b_dot_nodes(ii,:) .* TD_accum_frac_modern(ii);
+    end
+end  
 
 
 

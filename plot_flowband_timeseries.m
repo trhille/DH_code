@@ -12,7 +12,7 @@ load 'DH_DATA/Geochronology data/cosmo_data.mat'
 load 'DH_DATA/Geochronology data/algae_data.mat'
 % get the names of all runs in the ensemble you are scoring
 runs_dir = ['/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Modeling/Koutnik',...
-    ' model/DH_code/TEST_DH/output/sealev_ens/deformation_and_sliding/'];
+    ' model/DH_code/TEST_DH/output/'];
 
 runs_dir_content = struct2table(dir([runs_dir, '*.mat']));
 ens_runs = runs_dir_content.name;
@@ -137,9 +137,9 @@ for jj = 1:length(ens_runs)
 %% Now score this model run against geochronology
 
 model_DV_cosmo = interp1(-t_P2, S_P2(:, DV_x_P_ind), ...
-    sort(DAN_UM_DV_BV_cosmo_ages, 'descend'));
+    DAN_UM_DV_BV_cosmo_ages);
 model_DV_algae = interp1(-t_P2, S_P2(:, DV_x_P_ind), ...
-    sort(DAN_UM_DV_BV_algae_ages, 'descend'));
+    DAN_UM_DV_BV_algae_ages);
 
 RMS_scores.DV_cosmo(jj) = sqrt(sum((DAN_UM_DV_BV_cosmo_elev - ... 
     model_DV_cosmo).^2)./length(DAN_UM_DV_BV_cosmo_elev));
@@ -147,9 +147,9 @@ RMS_scores.DV_algae(jj) = sqrt(sum((DAN_UM_DV_BV_algae_elev - ...
     model_DV_algae).^2)./length(DAN_UM_DV_BV_algae_elev));
 
 model_MV_cosmo = interp1(-t_P2, S_P2(:, MV_x_P_ind), ... 
-    sort(MV_cosmo_ages, 'descend'));
+    MV_cosmo_ages);
 model_MV_algae = interp1(-t_P2, S_P2(:, MV_x_P_ind), ... 
-    sort(MV_algae_ages, 'descend'));
+    MV_algae_ages);
 
 RMS_scores.MV_cosmo(jj) = sqrt(sum((MV_cosmo_elev - ... 
     model_MV_cosmo).^2)./length(MV_cosmo_elev));
@@ -157,9 +157,9 @@ RMS_scores.MV_algae(jj) = sqrt(sum((MV_algae_elev - ...
     model_MV_algae).^2)./length(MV_algae_elev));
 
 model_LW_cosmo = interp1(-t_P2, S_P2(:, LW_x_P_ind), ...
-    sort(LW_cosmo_ages, 'descend'));
+    LW_cosmo_ages);
 model_LW_algae = interp1(-t_P2, S_P2(:, LW_x_P_ind), ...
-    sort(LW_algae_ages, 'descend'));
+    LW_algae_ages);
 
 RMS_scores.LW_cosmo(jj) = sqrt(sum((LW_cosmo_elev - ... 
     model_LW_cosmo).^2)./length(LW_cosmo_elev));
@@ -167,9 +167,9 @@ RMS_scores.LW_algae(jj) = sqrt(sum((LW_algae_elev - ...
     model_LW_algae).^2)./length(LW_algae_elev));
 
 model_DH_cosmo = interp1(-t_P, S_P(:, 1)-S_at_GL(end), ...
-    sort(DH_cosmo_ages, 'descend'));
+    DH_cosmo_ages);
 model_DH_algae = interp1(-t_P, S_P(:, 1)-S_at_GL(end), ...
-    sort(DH_algae_ages, 'descend'));
+    DH_algae_ages);
 
 RMS_scores.DH_cosmo(jj) = sqrt(sum((DH_cosmo_elev - ...
     model_DH_cosmo).^2)./length(DH_cosmo_elev));
@@ -261,7 +261,7 @@ figure(1)
     title({'\it Dubris and Bibra Valleys,'; 'Danum Platform, Updog Mtn '}, 'FontWeight', 'normal')
     DAN_UM_DV_BV_cosmo_plot = plot(DAN_UM_DV_BV_cosmo_ages, DAN_UM_DV_BV_cosmo_elev, 'ko', 'MarkerFaceColor', [0.8, 0.8, 0.8]);
     DAN_UM_DV_BV_algae_plot = plot(DAN_UM_DV_BV_algae_ages, DAN_UM_DV_BV_algae_elev, 'ko', 'MarkerFaceColor', [0.2, 0.8, 0.8]);
-    set(gca, 'Fontsize', 15, 'Xticklabel', [0 5 10 15 20])
+    set(gca, 'Fontsize', 15)
     set(gcf, 'Position', [202   438   292   260], 'PaperPositionMode', 'auto')
     ylabel('Elevation (m)')
     xlabel ('Age (kyr BP)')
@@ -274,7 +274,7 @@ figure(2)
     title('\it Magnis Valley ', 'FontWeight', 'normal')
     plot(MV_cosmo_ages, MV_cosmo_elev, 'ko', 'MarkerFaceColor', [0.8 0.8 0.8]);
     plot(MV_algae_ages, MV_algae_elev, 'ko', 'MarkerFaceColor', [0.2 0.8 0.8]);
-    set(gca, 'Fontsize', 15, 'Xticklabel', [0 5 10 15 20])
+    set(gca, 'Fontsize', 15)
     set(gcf, 'Position', [202   438   292   260], 'PaperPositionMode', 'auto')
     ylabel('Elevation (m)')
     xlabel ('Age (kyr BP)')
@@ -285,7 +285,7 @@ figure(3)
     title('\it Lake Wellman ', 'FontWeight', 'normal')
     plot(LW_cosmo_ages, LW_cosmo_elev, 'ko', 'MarkerFaceColor', [0.8 0.8 0.8]);
     plot(LW_algae_ages, LW_algae_elev, 'ko', 'MarkerFaceColor', [0.2 0.8 0.8]);
-    set(gca, 'Fontsize', 15, 'Xticklabel', [0 5 10 15 20])
+    set(gca, 'Fontsize')
     set(gcf, 'Position', [202   438   292   260], 'PaperPositionMode', 'auto')
     ylabel('Elevation (m)')
     xlabel ('Age (kyr BP)')
@@ -296,15 +296,15 @@ figure(4)
     title('\it Diamond Hill ', 'FontWeight', 'normal')
     plot(DH_cosmo_ages, DH_cosmo_elev, 'ko', 'MarkerFaceColor', [0.8 0.8 0.8])
     plot(DH_algae_ages, DH_algae_elev, 'ko', 'MarkerFaceColor', [0.2 0.8 0.8])
-    set(gca, 'Fontsize', 15, 'Xticklabel', [0 5 10 15 20])
+    set(gca, 'Fontsize')
     set(gcf, 'Position', [202   438   292   260], 'PaperPositionMode', 'auto')
     ylabel('Height above modern glacier (m)')
     xlabel ('Age (kyr BP)')
     grid on
     
-%% get the five highest scores and plot them in a better color
-highest_scores = sort(RMS_scores.total);
-highest_scores = highest_scores(end-6:end-1);
+%% Algae: get the five highest scores and plot them in a better color
+highest_scores_algae = sort(RMS_scores.algae_total);
+highest_scores_algae = highest_scores_algae(end-6:end-1);
 colors = [118,42,131
 175,141,195
 231,212,232
@@ -312,8 +312,8 @@ colors = [118,42,131
 127,191,123
 27,120,55]./255;
 
-for jj = 1:length(highest_scores);
-highest_scores_index(jj) = find(RMS_scores.total == highest_scores(jj));
+for jj = 1:length(highest_scores_algae);
+highest_scores_index(jj) = find(RMS_scores.algae_total == highest_scores_algae(jj));
 
 load([runs_dir,'/', ens_runs{highest_scores_index(jj)}], 't_P', 't_P2', ...
         'x_P', 'x_P2', 'S_P', 'S_P2', 'S_at_GL');
@@ -347,8 +347,8 @@ end
 figure(6)
 subplot(1,4,1)
 FaceColor = [188,189,220]./255;
-bar([1, 0], [mean(RMS_scores.total(RMS_scores.LR04_sealev == 1)),...
-    mean(RMS_scores.total(RMS_scores.LR04_sealev == 0))], 'FaceColor', FaceColor)
+bar([1, 0], [mean(RMS_scores.algae_total(RMS_scores.LR04_sealev == 1)),...
+    mean(RMS_scores.algae_total(RMS_scores.LR04_sealev == 0))], 'FaceColor', FaceColor)
 set(gca, 'XTickLabel', {'Spratt', 'LR04'}, 'Fontsize', 15)
 xlabel('Sea-level forcing')
 ylim([0 0.035])
@@ -357,8 +357,8 @@ ylabel('Mean model score')
 grid on
 
 subplot(1,4,2)
-bar([1000, 2000], [mean(RMS_scores.total(RMS_scores.tau==1000)),...
-    mean(RMS_scores.total(RMS_scores.tau==2000))], 'FaceColor', FaceColor)
+bar([1000, 2000], [mean(RMS_scores.algae_total(RMS_scores.tau==1000)),...
+    mean(RMS_scores.algae_total(RMS_scores.tau==2000))], 'FaceColor', FaceColor)
 set(gca, 'fontsize', 15, 'YTickLabel', {'' '' '' ''})
 xlabel({'\tau: rebound'; 'response time (yr)'})
 ylim([0 0.035])
@@ -366,8 +366,8 @@ xlim([500 2500])
 grid on
 
 subplot(1,4,3)
-bar([0.5 1], [mean(RMS_scores.total(RMS_scores.ocfac==0.5))...
-    mean(RMS_scores.total(RMS_scores.ocfac==1))], 'FaceColor', FaceColor); 
+bar([0.5 1], [mean(RMS_scores.algae_total(RMS_scores.ocfac==0.5))...
+    mean(RMS_scores.algae_total(RMS_scores.ocfac==1))], 'FaceColor', FaceColor); 
 xlabel({'Sub-shelf'; 'melting factor'})
 set(gca, 'fontsize', 15, 'Xtick', [0.5 1], 'YTickLabel', {'' '' '' ''})
 ylim([0 0.035])
@@ -375,9 +375,9 @@ xlim([0.25 1.25])
 grid on
 
 subplot(1,4,4)
- bar([-5 -6 -7], [mean(RMS_scores.total(RMS_scores.crhshelf == 1e-5))...
-     mean(RMS_scores.total(RMS_scores.crhshelf == 1e-6))...
-     mean(RMS_scores.total(RMS_scores.crhshelf == 1e-7))], 'FaceColor', FaceColor)
+ bar([-5 -6 -7], [mean(RMS_scores.algae_total(RMS_scores.crhshelf == 1e-5))...
+     mean(RMS_scores.algae_total(RMS_scores.crhshelf == 1e-6))...
+     mean(RMS_scores.algae_total(RMS_scores.crhshelf == 1e-7))], 'FaceColor', FaceColor)
 set(gca, 'XTickLabel', {'10^{-7}', '10^{-6}', '10^{-5}'}, 'YTickLabel', {'' '' '' ''})
 xlabel({'Basal sliding parameter'; 'beneath modern ice shelf'})
 set(gca, 'fontsize', 15)
