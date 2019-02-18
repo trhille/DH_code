@@ -1,6 +1,8 @@
 % This script kills fascists and plots timeseries of all flowband model
 % output in a given directory at Diamond Hill, Lake Wellman, Magnis Valley,
 % and Dubris Valley
+close all
+
 addpath '/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Manuscript/Figures/scripts/'
 LW_x_P_ind = 13;
 MV_x_P_ind = 31;
@@ -12,7 +14,7 @@ load 'DH_DATA/Geochronology data/cosmo_data.mat'
 load 'DH_DATA/Geochronology data/algae_data.mat'
 % get the names of all runs in the ensemble you are scoring
 runs_dir = ['/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/Modeling/Koutnik',...
-    ' model/DH_code/TEST_DH/output/'];
+    ' model/DH_code/TEST_DH/output/deglaciation_scenarios/'];
 
 runs_dir_content = struct2table(dir([runs_dir, '*.mat']));
 ens_runs = runs_dir_content.name;
@@ -304,46 +306,85 @@ figure(4)
     
 %% Algae: get the five highest scores and plot them in a better color
 highest_scores_algae = sort(RMS_scores.algae_total);
-highest_scores_algae = highest_scores_algae(end-6:end-1);
-colors = [118,42,131
-175,141,195
-231,212,232
-217,240,211
-127,191,123
-27,120,55]./255;
+highest_scores_algae = highest_scores_algae(end-5:end);
+highest_scores_cosmo = sort(RMS_scores.cosmo_total);
+highest_scores_cosmo = highest_scores_cosmo(end-5:end);
+
+% this is a nice purple and green colormap, but don't use it here.
+% colors = [118,42,131
+% 175,141,195
+% 231,212,232
+% 217,240,211
+% 127,191,123
+% 27,120,55]./255;
+
+cosmo_markerstyle = {'o', 'd', 's', '<', '^', '>'};
+mark_pos = 1; % marker position so they will be offset to avoid overlap.
+algae_cmap = summer(length(highest_scores_algae));
 
 for jj = 1:length(highest_scores_algae);
-highest_scores_index(jj) = find(RMS_scores.algae_total == highest_scores_algae(jj));
+highest_scores_algae_index(jj) = find(RMS_scores.algae_total == highest_scores_algae(jj));
+highest_scores_cosmo_index(jj) = find(RMS_scores.cosmo_total == highest_scores_cosmo(jj));
 
-load([runs_dir,'/', ens_runs{highest_scores_index(jj)}], 't_P', 't_P2', ...
+load([runs_dir,'/', ens_runs{highest_scores_algae_index(jj)}], 't_P', 't_P2', ...
         'x_P', 'x_P2', 'S_P', 'S_P2', 'S_at_GL');
-   
+
+      
 
     
     figure(1)
 
     hold on
     DV_ax = gca;
-    plot(-t_P2, S_P2(:, DV_x_P_ind), 'Color', colors(jj,:), 'linewidth', 2);
+    plot(-t_P2, S_P2(:, DV_x_P_ind), 'Color', algae_cmap(jj,:), 'linewidth', 2);
     
     figure(2)
     hold on
-    plot(-t_P2, S_P2(:, MV_x_P_ind), 'Color', colors(jj,:),  'linewidth', 2);
+    plot(-t_P2, S_P2(:, MV_x_P_ind), 'Color', algae_cmap(jj,:),  'linewidth', 2);
     
     figure(3)
     hold on
     LW_ax = gca;
-    plot(-t_P2, S_P2(:, LW_x_P_ind), 'Color', colors(jj,:), 'linewidth', 2);
+    plot(-t_P2, S_P2(:, LW_x_P_ind), 'Color', algae_cmap(jj,:), 'linewidth', 2);
 
-    
     figure(4)
     hold on
     DH_ax = gca;
-    plot(-t_P2, S_at_GL-S_at_GL(end), 'Color', colors(jj,:),  'linewidth', 2);
+    plot(-t_P2, S_at_GL-S_at_GL(end), 'Color', algae_cmap(jj,:),  'linewidth', 2);
+ 
+load([runs_dir,'/', ens_runs{highest_scores_cosmo_index(jj)}], 't_P', 't_P2', ...
+        'x_P', 'x_P2', 'S_P', 'S_P2', 'S_at_GL');
+    
+    figure(1)
+    hold on
+    DV_ax = gca;
+    plot(-t_P2(mark_pos:10:end), S_P2(mark_pos:10:end, DV_x_P_ind), ...
+        cosmo_markerstyle{jj}, 'color', 'k');
+    
+    figure(2)
+    hold on
+    plot(-t_P2(mark_pos:10:end), S_P2((mark_pos:10:end), MV_x_P_ind), ...
+        cosmo_markerstyle{jj}, 'color', 'k');
+    
+    figure(3)
+    hold on
+    LW_ax = gca;
+    plot(-t_P2(mark_pos:10:end), S_P2((mark_pos:10:end), LW_x_P_ind), ... 
+        cosmo_markerstyle{jj}, 'color', 'k');
 
+    figure(4)
+    hold on
+    DH_ax = gca;
+    plot(-t_P2(mark_pos:10:end), S_at_GL(mark_pos:10:end)-S_at_GL(end), ...
+        cosmo_markerstyle{jj}, 'color', 'k');
+    
+    mark_pos = mark_pos + 7; % offset markers for clarity
 end
 
-%% plot model score stats
+%% plot model score stats if the runs are from a PSU ice model ensemble
+if ~isempty(strfind(runs_dir, 'sealev_ens')) 
+    
+    
 figure(6)
 subplot(1,4,1)
 FaceColor = [188,189,220]./255;
@@ -398,7 +439,7 @@ set(gcf, 'Position', [419   500   743   205], 'PaperPositionMode', 'auto')
 
 %% plot up highest-scoring runs in map view
 
-highest_scoring_runs = regexprep(RMS_scores.name(highest_scores_index),...
+highest_scoring_runs = regexprep(RMS_scores.name(highest_scores_algae_index),...
     '.mat','','ignorecase'); %need to remove .mat from each one
 
 addpath /Users/trevorhillebrand/Documents/Antarctica/PSUICE3D/Model_output/
@@ -462,3 +503,4 @@ ylabel(cbar, 'Bed Elevation (m)')
 set(cbar, 'fontsize', 14, 'orientation', 'horizontal', 'location', 'southoutside')
 
 set(gcf, 'Position', [130    98   988   607], 'PaperPositionMode', 'auto')
+end

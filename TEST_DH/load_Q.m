@@ -34,7 +34,7 @@ function  [ Q_0_in, ...
   Q_ext_R_nodes = 0 * ones(size(t_nodes));%-Q_0_in * ones(size(t_nodes));
 
   
-   flux_in = 0e3;
+   flux_in = 22500;
    load TEST_DH/values_for_Qext_R.mat 
    values = interp1(t_P, values, t_nodes);
    Q_ext_R_nodes = flux_in * values; 

@@ -10,10 +10,10 @@ load(['/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/',...
 load(['/Users/trevorhillebrand/Documents/Antarctica/Darwin-Hatherton/',...
     'Modeling/Koutnik model/DH_code/DH_DATA/Geochronology data/algae_data.mat']);
 
-% erratics_names = {'14-HAT-012-DH';'14-HAT-014-DH';'14-HAT-015-DH';'14-HAT-016-DH';...
-%     '14-HAT-017-DH';'14-HAT-022-DH';'14-HAT-024-DH';'14-HAT-032-DH'};
-erratics_names = {'14-HAT-014-DH';'14-HAT-015-DH';'14-HAT-016-DH';...
-    '14-HAT-017-DH';'14-HAT-032-DH'};
+erratics_names = {'14-HAT-012-DH';'14-HAT-014-DH';'14-HAT-015-DH';'14-HAT-016-DH';...
+    '14-HAT-017-DH';'14-HAT-022-DH';'14-HAT-024-DH';'14-HAT-032-DH'};
+% erratics_names = {'14-HAT-014-DH';'14-HAT-015-DH';'14-HAT-016-DH';...
+%     '14-HAT-017-DH';'14-HAT-032-DH'};
 
 erratics_ind = ismember(data.parsed_output.DH.erratics.SampleName, erratics_names);
 
@@ -22,8 +22,8 @@ erratics_err = data.parsed_output.DH.erratics.ext10St(erratics_ind);
 erratics_height = data.parsed_output.DH.erratics.HeightAboveIceMargin(erratics_ind);
 
 
-% bedrock_names = {'14-HAT-006-DH';'14-HAT-026-DH';'14-HAT-033-DH'};
-bedrock_names = {'14-HAT-035-DH'; '14-HAT-036-DH'; '14-HAT-039-DH'};
+bedrock_names = {'14-HAT-006-DH';'14-HAT-026-DH';'14-HAT-033-DH'};
+% bedrock_names = {'14-HAT-035-DH'; '14-HAT-036-DH'; '14-HAT-039-DH'};
 
 bedrock_ind = ismember(data.parsed_output.DH.bedrock.SampleName, bedrock_names);
 

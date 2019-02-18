@@ -13,14 +13,14 @@ global lapse_LGM
 
 addpath(DIRECTORY_data)
 
-scale_Taylor_Dome = 1;
+scale_Taylor_Dome = 0;
 
 bdot1 = 0;
 bdot2 = 0;
 bdot3 = 0;
 bdot4 = 0;
 bdot5 = 1;
-bdot6 = 0;
+bdot6 = 1;
 bdot7 = 0;
 bdot8 = 0;
 
