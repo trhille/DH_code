@@ -100,6 +100,19 @@ for ii = 1:N_t_nodes2
 b_dot_nodes(ii,:) = b_dot_use;
 end
 
+  %% Give n_spinup timesteps to equilibrate to new SMB if bdot5 ~= 1
+    load Darwin_RACMO2_1.mat
+    n_spinup = 10; %numer of nodes for spinup to account for different SMB than that used for min_E and min_fs (bdot5)
+    b_dot_spinup = interp1(Darwin_distance_along_centerline + x_nodes(1), Darwin_SMB,...
+      x_nodes, 'linear', 'extrap');
+
+   spinup_weight = linspace(0,1,n_spinup);
+  
+  for mm = 1:n_spinup
+  b_dot_nodes(mm,:) = spinup_weight(mm).*b_dot_use + ...
+      (1-spinup_weight(mm)).*b_dot_spinup;
+  end
+
 elseif bdot1 + bdot2 + bdot3 + bdot4 + bdot5 + bdot6 + bdot7 + bdot8 > 1
 
 if bdot1 == 1 && bdot2 == 1

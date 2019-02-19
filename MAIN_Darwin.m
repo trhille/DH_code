@@ -220,7 +220,7 @@ end   % if statement on temperature options
 %These are found in DH_DATA/Boundary_conditions/Diamond_Hill.
 %Choose which thinning history you would like to use
 % % % 
-scenario = 'Rapid9ka';
+scenario = 'LargeLGM';
 %Choose step, linear, quad, or cubic
 fit = 'linear';
 

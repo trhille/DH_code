@@ -734,6 +734,7 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     plot(-t_P/1000, S_P(:,1) - S_0_in, 'linewidth', 2,'color', [0.8 0.8 0.8])
     plot(-t_P/1000, S_P(:,1) - S_0_in, 'k', 'linewidth', 2)
     
+    if ~strcmp(scenario, 'LargeLGM')
     %plot exposure ages
     plot(data.parsed_output.DH.erratics.t10St/1000,...
         data.parsed_output.DH.erratics.HeightAboveIceMargin, 'ko',...
@@ -745,9 +746,21 @@ LGM_labels = {'LW', 'MV', 'DAN'};
     
     %Plot algae ages
     plot(DH_Darwin_algae.AveCalYr/1000, DH_Darwin_algae.HeightAboveIceMargin, 'ks')
+    
+    elseif strcmp(scenario, 'LargeLGM')
+        LargeLGM_bedrock_index = ismember(data.parsed_output.DH.bedrock.SampleName, ...
+            {'14-HAT-035-DH'; '14-HAT-036-DH'; '14-HAT-039-DH'});
+    bedrock_plot = plot(data.parsed_output.DH.bedrock.t14St(LargeLGM_bedrock_index)/1000,...
+        data.parsed_output.DH.bedrock.HeightAboveIceMargin(LargeLGM_bedrock_index),...
+        'k<', 'markerfacecolor', [0.8 0.8 0.8]);
+    saturation_elev = plot([0 30], [479 479], 'k--', 'linewidth', 2);
+    
+    %Plot algae ages
+    plot(DH_Diamond_algae.AveCalYr/1000, DH_Diamond_algae.HeightAboveIceMargin, 'ks')    
+        
+    end
     legend([saturation_elev, bedrock_plot],...
         {'^1^4C-saturated bedrock', 'Bedrock ^1^4C age'})
-    
     xlim([0 20])
     title 'Diamond Hill'
     xlabel ('Time (kyr BP)')
